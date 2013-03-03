@@ -30,6 +30,15 @@ public class MainActivity extends Activity
         
         marker = addMarker(GT);
 		marker.setDraggable(true);
+		
+		map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+
+			@Override
+			public void onMapLongClick(LatLng pos) {
+				addMarker(pos);
+			}
+		});
+
 		map.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
 
 			@Override
@@ -79,7 +88,6 @@ public class MainActivity extends Activity
         // Do a null check to confirm that we have not already instantiated the map.
         if (map == null) {
             map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-            // Check if we were successful in obtaining the map.
             if (map != null) {
             	// Something has gone wrong.
                 assert(false);
