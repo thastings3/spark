@@ -3,6 +3,7 @@ package com.gatech.spark.activity;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.gatech.spark.R;
+import com.gatech.spark.SparkMapFragment;
 import com.gatech.spark.fragment.WhatsHotfragment;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener
@@ -111,6 +113,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                 case 0:
                     fragment = new WhatsHotfragment();
                     return fragment;
+                case 1:
+                	fragment = new SparkMapFragment();
+                	return fragment;
                 default:
                     // The other sections of the app are dummy placeholders.
                     fragment = new DummySectionFragment();

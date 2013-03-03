@@ -2,30 +2,38 @@ package com.gatech.spark;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.os.Bundle;
-import android.app.Activity;
+//import android.app.Fragment;
+import android.support.v4.app.Fragment;
+
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
-public class MapActivity extends Activity {
+public class SparkMapFragment extends Fragment {
 
     private GoogleMap map;
     private Marker marker;
     private static final LatLng GT = new LatLng(33.78102,-84.400363);
     
-	public MapActivity() {
-		// TODO Auto-generated constructor stub
-	}
-
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.big_map, container, false);
+    }
+    
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.big_map);
         setUpMapIfNeeded();
 
         map.moveCamera(CameraUpdateFactory.newLatLng(GT));
@@ -52,7 +60,7 @@ public class MapActivity extends Activity {
 			@Override
 			public void onMarkerDragEnd(Marker marker) {
 				LatLng latlng = marker.getPosition();
-				Toast.makeText(MapActivity.this, "new position is " + latlng,
+				Toast.makeText(SparkMapFragment.this.getActivity(), "new position is " + latlng,
 						Toast.LENGTH_SHORT).show();
 			}
 
@@ -62,14 +70,7 @@ public class MapActivity extends Activity {
 			}
 		});
 	}
-	
-    
-    @Override
-    protected void onResume() {
-    	super.onResume();
-    	setUpMapIfNeeded();
-    }
-    
+
     private Marker addMarker(LatLng position) {
         Marker marker = map.addMarker(new MarkerOptions()
         .position(position)
@@ -82,7 +83,7 @@ public class MapActivity extends Activity {
     private void setUpMapIfNeeded() {
         // Do a null check to confirm that we have not already instantiated the map.
         if (map == null) {
-            map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+            map = ((SupportMapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
             if (map != null) {
             	// Something has gone wrong.
                 assert(false);
