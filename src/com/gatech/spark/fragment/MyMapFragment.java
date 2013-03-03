@@ -13,11 +13,11 @@ import com.gatech.spark.R;
  * User: tyler
  * To change this template use File | Settings | File Templates.
  */
-public class WhatsHotfragment extends Fragment {
+public class MyMapFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_whats_hot, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_my_map, container, false);
         //((TextView) rootView.findViewById(android.R.id.text1)).setText( "Section" + "test");
         return rootView;
     }
