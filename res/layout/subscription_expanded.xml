@@ -5,4 +5,34 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lot 1"
+            android:textSize="25dp"
+            android:id="@+id/textView" android:layout_gravity="right|center_vertical"/>
+
+    <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:background="@android:color/black"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="47 Spots Available"
+            android:textSize="20dp"
+            android:id="@+id/textView1" android:layout_gravity="left|center_vertical"/>
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView"
+            android:src="@drawable/graph"/>
+    <Button
+            android:id="@+id/navigationButton"
+            android:onClick="startNavigation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Navigation"
+            android:drawableLeft="@drawable/navigation"/>
 </LinearLayout>
