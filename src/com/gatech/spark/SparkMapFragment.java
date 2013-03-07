@@ -10,38 +10,37 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import android.os.Bundle;
 //import android.app.Fragment;
 import android.support.v4.app.Fragment;
-
+import android.support.v4.app.FragmentManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-public class SparkMapFragment extends Fragment {
+public class SparkMapFragment extends SupportMapFragment {
 
-    private GoogleMap map;
-    private Marker marker;
-    private static final LatLng GT = new LatLng(33.78102,-84.400363);
-    
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.big_map, container, false);
-    }
-    
-	/** Called when the activity is first created. */
+	private GoogleMap map;
+	private Marker marker;
+	private static final LatLng GT = new LatLng(33.78102, -84.400363);
+
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setUpMapIfNeeded();
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		// Inflate the layout for this fragment
+		return inflater.inflate(R.layout.big_map, container, false);
+	}
 
-        map.moveCamera(CameraUpdateFactory.newLatLng(GT));
-        map.animateCamera(CameraUpdateFactory.zoomTo(12));
-        
-        marker = addMarker(GT);
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		// setUpMapIfNeeded();
+		super.onActivityCreated(savedInstanceState);
+		map = getMap();
+		map.moveCamera(CameraUpdateFactory.newLatLng(GT));
+		map.animateCamera(CameraUpdateFactory.zoomTo(12));
+
+		marker = addMarker(GT);
 		marker.setDraggable(true);
-		
+
 		map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
 
 			@Override
@@ -60,8 +59,8 @@ public class SparkMapFragment extends Fragment {
 			@Override
 			public void onMarkerDragEnd(Marker marker) {
 				LatLng latlng = marker.getPosition();
-				Toast.makeText(SparkMapFragment.this.getActivity(), "new position is " + latlng,
-						Toast.LENGTH_SHORT).show();
+				Toast.makeText(SparkMapFragment.this.getActivity(),
+						"new position is " + latlng, Toast.LENGTH_SHORT).show();
 			}
 
 			@Override
@@ -71,25 +70,33 @@ public class SparkMapFragment extends Fragment {
 		});
 	}
 
-    private Marker addMarker(LatLng position) {
-        Marker marker = map.addMarker(new MarkerOptions()
-        .position(position)
-        .title("Hello world")
-        .snippet("Load: 14%")
-        .draggable(true));
-        return marker;
-    }
-    
-    private void setUpMapIfNeeded() {
-        // Do a null check to confirm that we have not already instantiated the map.
-        if (map == null) {
-            map = ((SupportMapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-            if (map != null) {
-            	// Something has gone wrong.
-                assert(false);
-            }
-         // The Map is verified. It is now safe to manipulate the map.
-        }
-    }
+	/** Called when the activity is first created. */
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+	}
+
+	private Marker addMarker(LatLng position) {
+		Marker marker = map.addMarker(new MarkerOptions().position(position)
+				.title("Hello world").snippet("Load: 14%").draggable(true));
+		return marker;
+	}
+
+	private void setUpMapIfNeeded() {
+		// Do a null check to confirm that we have not already instantiated the
+		// map.
+		if (map == null) {
+			FragmentManager manager = getFragmentManager();
+			SupportMapFragment fragment = (SupportMapFragment) manager
+					.findFragmentById(R.id.map);
+			map = fragment.getMap();
+			if (map != null) {
+				// Something has gone wrong.
+				assert (false);
+			}
+			// The Map is verified. It is now safe to manipulate the map.
+		}
+	}
 
 }
