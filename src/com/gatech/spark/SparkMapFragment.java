@@ -82,21 +82,4 @@ public class SparkMapFragment extends SupportMapFragment {
 				.title("Hello world").snippet("Load: 14%").draggable(true));
 		return marker;
 	}
-
-	private void setUpMapIfNeeded() {
-		// Do a null check to confirm that we have not already instantiated the
-		// map.
-		if (map == null) {
-			FragmentManager manager = getFragmentManager();
-			SupportMapFragment fragment = (SupportMapFragment) manager
-					.findFragmentById(R.id.map);
-			map = fragment.getMap();
-			if (map != null) {
-				// Something has gone wrong.
-				assert (false);
-			}
-			// The Map is verified. It is now safe to manipulate the map.
-		}
-	}
-
 }
