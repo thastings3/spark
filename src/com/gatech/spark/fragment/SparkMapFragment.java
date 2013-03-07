@@ -9,6 +9,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,21 +20,29 @@ public class SparkMapFragment extends SupportMapFragment {
 	private GoogleMap map;
 	private Marker marker;
 	private static final LatLng GT = new LatLng(33.78102, -84.400363);
+	private static final String TAG = "SparkMapFragment";
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 		View view = inflater.inflate(R.layout.big_map, container, false);
-		setupMap();
+		setupMapIfNeeded();
 		return view;
 	}
 
-	public void setupMap() {
-		map = getMap();
+	public void setupMapIfNeeded() {
+		if (map == null) {
+			Log.d(TAG, "Getting map for first time");
+			map = ((SupportMapFragment) getActivity()
+					.getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+			configMap();
+		}
+	}
+
+	public void configMap() {
 		map.moveCamera(CameraUpdateFactory.newLatLng(GT));
 		map.animateCamera(CameraUpdateFactory.zoomTo(12));
-
 		marker = addMarker(GT);
 		marker.setDraggable(true);
 
@@ -49,7 +58,6 @@ public class SparkMapFragment extends SupportMapFragment {
 
 			@Override
 			public void onMarkerDragStart(Marker arg0) {
-				// TODO Auto-generated method stub
 			}
 
 			@Override
@@ -61,16 +69,8 @@ public class SparkMapFragment extends SupportMapFragment {
 
 			@Override
 			public void onMarkerDrag(Marker arg0) {
-				// TODO Auto-generated method stub
 			}
 		});
-	}
-
-	/** Called when the activity is first created. */
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
 	}
 
 	private Marker addMarker(LatLng position) {
