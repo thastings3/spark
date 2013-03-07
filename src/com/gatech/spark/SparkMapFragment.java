@@ -26,14 +26,13 @@ public class SparkMapFragment extends SupportMapFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		// Inflate the layout for this fragment
-		return inflater.inflate(R.layout.big_map, container, false);
+		super.onCreateView(inflater, container, savedInstanceState);
+		View view = inflater.inflate(R.layout.big_map, container, false);
+		setupMap();
+		return view;
 	}
 
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		// setUpMapIfNeeded();
-		super.onActivityCreated(savedInstanceState);
+	public void setupMap() {
 		map = getMap();
 		map.moveCamera(CameraUpdateFactory.newLatLng(GT));
 		map.animateCamera(CameraUpdateFactory.zoomTo(12));
