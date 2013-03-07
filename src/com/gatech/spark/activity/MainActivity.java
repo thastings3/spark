@@ -13,6 +13,7 @@ import com.gatech.spark.R;
 import com.gatech.spark.fragment.SparkMapFragment;
 import com.gatech.spark.fragment.SubscriptionsFragment;
 import com.gatech.spark.fragment.WhatsHotfragment;
+import com.google.android.gms.maps.SupportMapFragment;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener
 {
@@ -108,7 +109,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             Fragment fragment;
             switch (i) {
                 case 0:
-                    fragment = new WhatsHotfragment();
+                    fragment = new SupportMapFragment();
+                    //fragment = new WhatsHotfragment();
                     return fragment;
                 case 1:
                     fragment = new SparkMapFragment();
