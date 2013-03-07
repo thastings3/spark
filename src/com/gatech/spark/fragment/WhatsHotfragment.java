@@ -17,8 +17,8 @@ public class WhatsHotfragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_section_dummy, container, false);
-        ((TextView) rootView.findViewById(android.R.id.text1)).setText( "Section" + "test");
+        View rootView = inflater.inflate(R.layout.fragment_whats_hot, container, false);
+        //((TextView) rootView.findViewById(android.R.id.text1)).setText( "Section" + "test");
         return rootView;
     }
 }

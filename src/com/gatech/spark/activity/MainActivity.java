@@ -9,12 +9,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 import com.gatech.spark.R;
 import com.gatech.spark.fragment.SparkMapFragment;
+import com.gatech.spark.fragment.SubscriptionsFragment;
 import com.gatech.spark.fragment.WhatsHotfragment;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener
@@ -114,11 +111,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     fragment = new WhatsHotfragment();
                     return fragment;
                 case 1:
-                	fragment = new SparkMapFragment();
-                	return fragment;
+                    fragment = new SparkMapFragment();
+                    return fragment;
+                case 2:
+                    fragment = new SubscriptionsFragment();
+                    return fragment;
                 default:
-                    // The other sections of the app are dummy placeholders.
-                    fragment = new DummySectionFragment();
+                    fragment = new SparkMapFragment();
                     return fragment;
             }
         }
@@ -146,21 +145,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                 return "tab";
             }
 
-        }
-    }
-
-
-    /**
-     * A dummy fragment representing a section of the app, but that simply displays dummy text.
-     */
-    public static class DummySectionFragment extends Fragment {
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_section_dummy, container, false);
-            ((TextView) rootView.findViewById(android.R.id.text1)).setText( "Section");
-            return rootView;
         }
     }
 
