@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.gatech.spark.R;
-import com.gatech.spark.SparkMapFragment;
+import com.gatech.spark.fragment.SparkMapFragment;
 import com.gatech.spark.fragment.WhatsHotfragment;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener

@@ -1,5 +1,6 @@
-package com.gatech.spark;
+package com.gatech.spark.fragment;
 
+import com.gatech.spark.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -8,10 +9,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.os.Bundle;
-//import android.app.Fragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
