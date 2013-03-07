@@ -9,7 +9,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.os.Bundle;
 import android.app.Activity;
-import android.view.Menu;
+import android.util.Log;
 import android.widget.Toast;
 
 public class MainActivity extends Activity
@@ -17,6 +17,7 @@ public class MainActivity extends Activity
     private GoogleMap map;
     private Marker marker;
     private static final LatLng GT = new LatLng(33.78102,-84.400363);
+    private static final String TAG = "Spark.Map";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -88,11 +89,10 @@ public class MainActivity extends Activity
         // Do a null check to confirm that we have not already instantiated the map.
         if (map == null) {
             map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-            if (map != null) {
-            	// Something has gone wrong.
-                assert(false);
+            if (map == null) {
+            	Log.d(TAG, "Map is not inflated properly.");
             }
-         // The Map is verified. It is now safe to manipulate the map.
+            Log.d(TAG, "Map is verified.");
         }
     }
 
