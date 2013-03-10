@@ -7,7 +7,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.content.Context;
 import android.location.Location;
@@ -23,8 +22,8 @@ import android.widget.Toast;
 public class SparkMapFragment extends SupportMapFragment {
 
 	private static final String TAG = "SparkMapFragment";
+	protected static final LatLng GT = new LatLng(33.78102, -84.400363);
 	private GoogleMap map;
-	private static final LatLng GT = new LatLng(33.78102, -84.400363);
 	private LatLng currentLoc;
 	private boolean locationHasBeenSet = false;
 
@@ -48,13 +47,11 @@ public class SparkMapFragment extends SupportMapFragment {
 	}
 
 	public void setupMap() {
-		MarkerPlacer.addWhatsHotMarker(map, GT);
-
 		map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
 
 			@Override
 			public void onMapLongClick(LatLng pos) {
-				addMarker(pos);
+				MarkerPlacer.addDraggableMarker(map, pos);
 			}
 		});
 
@@ -75,10 +72,6 @@ public class SparkMapFragment extends SupportMapFragment {
 			public void onMarkerDrag(Marker arg0) {
 			}
 		});
-	}
-
-	private Marker addMarker(LatLng position) {
-		return map.addMarker(new MarkerOptions().position(position).draggable(true));
 	}
 
 	private void setupLocationListener() {

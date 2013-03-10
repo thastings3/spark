@@ -30,4 +30,8 @@ public class MarkerPlacer {
 			.draggable(false);
 		return map.addMarker(markerOptions);
 	}
+
+	public static Marker addDraggableMarker(GoogleMap map, LatLng position) {
+		return map.addMarker(new MarkerOptions().position(position).draggable(true));
+	}
 }
