@@ -1,6 +1,7 @@
 package com.gatech.spark.fragment;
 
 import com.gatech.spark.R;
+import com.gatech.spark.helper.MarkerPlacer;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -23,7 +24,6 @@ public class SparkMapFragment extends SupportMapFragment {
 
 	private static final String TAG = "SparkMapFragment";
 	private GoogleMap map;
-	private Marker marker;
 	private static final LatLng GT = new LatLng(33.78102, -84.400363);
 	private LatLng currentLoc;
 	private boolean locationHasBeenSet = false;
@@ -48,8 +48,8 @@ public class SparkMapFragment extends SupportMapFragment {
 	}
 
 	public void setupMap() {
-		marker = addMarker(GT);
-		marker.setDraggable(true);
+		MarkerPlacer placer = new MarkerPlacer(this.map);
+		placer.addWhatsHotMarker(GT, 100);
 
 		map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
 
