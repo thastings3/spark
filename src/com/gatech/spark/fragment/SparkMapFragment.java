@@ -13,6 +13,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,13 +35,9 @@ public class SparkMapFragment extends SupportMapFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
-		View view = inflater.inflate(getLayout(), container, false);
+		View view = inflater.inflate(layout, container, false);
 		setupMapIfNeeded();
 		return view;
-	}
-	
-	protected int getLayout() {
-		return layout;
 	}
 
 	public void setupMapIfNeeded() {
@@ -52,12 +50,11 @@ public class SparkMapFragment extends SupportMapFragment {
 	}
 
 	protected SupportMapFragment getMapFragment() {
-		return (SupportMapFragment) getActivity()
-				.getSupportFragmentManager().findFragmentById(getFragmentId());
-	}
-
-	protected int getFragmentId() {
-		return id;
+		FragmentActivity act = getActivity();
+		FragmentManager mgr = act.getSupportFragmentManager();
+		return (SupportMapFragment) mgr.findFragmentById(id);
+//		return (SupportMapFragment) getActivity()
+//				.getSupportFragmentManager().findFragmentById(id);
 	}
 
 	public void setupMap() {

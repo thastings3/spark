@@ -1,6 +1,8 @@
 package com.gatech.spark.fragment;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,8 +37,11 @@ public class WhatsHotFragment extends SupportMapFragment {
 	}
 
 	protected SupportMapFragment getMapFragment() {
-		return (SupportMapFragment) getActivity()
-				.getSupportFragmentManager().findFragmentById(id);
+		FragmentActivity act = getActivity();
+		FragmentManager mgr = act.getSupportFragmentManager();
+		return (SupportMapFragment) mgr.findFragmentById(id);
+//		return (SupportMapFragment) getActivity()
+//				.getSupportFragmentManager().findFragmentById(id);
 	}
 
     public void setupMap() {
