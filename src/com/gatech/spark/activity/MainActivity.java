@@ -9,7 +9,10 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.MotionEvent;
+import android.view.View;
 import com.gatech.spark.R;
+import com.gatech.spark.database.SqliteHelper;
 import com.gatech.spark.fragment.SparkMapFragment;
 import com.gatech.spark.fragment.SubscriptionsFragment;
 import com.gatech.spark.fragment.WhatsHotfragment;
@@ -32,11 +35,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      */
     ViewPager mViewPager;
 
+    private SqliteHelper dbHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        dbHelper = SqliteHelper.getDbHelper( getApplicationContext() );
 
         // Create the adapter that will return a fragment for each of the three primary sections
         // of the app.
@@ -63,6 +70,18 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                 // We can also use ActionBar.Tab#select() to do this if we have a reference to the
                 // Tab.
                 actionBar.setSelectedNavigationItem(position);
+            }
+        });
+
+
+        //TODO removed swiping for view pager. Need to see how map interaction is with this.
+        //I cannot view maps locally
+        mViewPager.setOnTouchListener(new View.OnTouchListener()
+        {
+            @Override
+            public boolean onTouch(View v, MotionEvent event)
+            {
+                return true;
             }
         });
 
@@ -113,13 +132,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     //fragment = new WhatsHotfragment();
                     return fragment;
                 case 1:
-                    fragment = new SparkMapFragment();
+                    fragment = new SupportMapFragment();
                     return fragment;
                 case 2:
-                    fragment = new SubscriptionsFragment();
+                    fragment = new SupportMapFragment();
                     return fragment;
                 default:
-                    fragment = new SparkMapFragment();
+                    fragment = new SupportMapFragment();
                     return fragment;
             }
         }
