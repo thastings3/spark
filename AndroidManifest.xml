@@ -52,8 +52,7 @@
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyDmPFDqWZ48cok348wMAfr4srJO4k2wbUY" />
-        <activity android:name="MapActivity"></activity>
-        <activity android:name=".activity.SubscriptionExpandedActivity"/>
+        <activity android:name=".activity.LotExpandedActivity"/>
         <!-- Google Maps API Key -->
         <meta-data
                 android:name="com.google.android.maps.v2.API_KEY"

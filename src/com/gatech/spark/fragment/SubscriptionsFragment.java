@@ -9,9 +9,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import com.gatech.spark.R;
-import com.gatech.spark.activity.SubscriptionExpandedActivity;
+import com.gatech.spark.activity.LotExpandedActivity;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,7 +31,7 @@ public class SubscriptionsFragment extends Fragment {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(getActivity(),SubscriptionExpandedActivity.class );
+                Intent intent = new Intent(getActivity(),LotExpandedActivity.class );
                 startActivity(intent);
             }
         });
