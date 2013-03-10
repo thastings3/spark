@@ -11,15 +11,19 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.MotionEvent;
 import android.view.View;
+import android.util.Log;
+
 import com.gatech.spark.R;
 import com.gatech.spark.database.SqliteHelper;
 import com.gatech.spark.fragment.SparkMapFragment;
 import com.gatech.spark.fragment.SubscriptionsFragment;
-import com.gatech.spark.fragment.WhatsHotfragment;
+import com.gatech.spark.fragment.WhatsHotFragment;
 import com.google.android.gms.maps.SupportMapFragment;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener
 {
+
+	private static final String TAG = "spark.MainActivity";
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the
@@ -119,7 +123,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      */
     public static class AppSectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public AppSectionsPagerAdapter(FragmentManager fm) {
+
+		public AppSectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -128,14 +133,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             Fragment fragment;
             switch (i) {
                 case 0:
-                    fragment = new SupportMapFragment();
-                    //fragment = new WhatsHotfragment();
+                	Log.d(TAG, "Creating new WhatsHotFragment");
+                    fragment = new WhatsHotFragment();
                     return fragment;
                 case 1:
-                    fragment = new SupportMapFragment();
+                	Log.d(TAG, "Creating new SparkMapFragment");
+                    fragment = new SparkMapFragment();
                     return fragment;
                 case 2:
-                    fragment = new SupportMapFragment();
+                	Log.d(TAG, "Creating new SubscriptionsFragment");
+                    fragment = new SubscriptionsFragment();
                     return fragment;
                 default:
                     fragment = new SupportMapFragment();

@@ -26,24 +26,38 @@ public class SparkMapFragment extends SupportMapFragment {
 	private GoogleMap map;
 	private LatLng currentLoc;
 	private boolean locationHasBeenSet = false;
+	protected int layout = R.layout.fragment_spark_map;
+	protected int id = R.id.spark_map;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
-		View view = inflater.inflate(R.layout.big_map, container, false);
+		View view = inflater.inflate(getLayout(), container, false);
 		setupMapIfNeeded();
 		return view;
+	}
+	
+	protected int getLayout() {
+		return layout;
 	}
 
 	public void setupMapIfNeeded() {
 		if (map == null) {
 			Log.d(TAG, "Getting map for first time");
-			map = ((SupportMapFragment) getActivity()
-					.getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+			map = getMapFragment().getMap();
 			setupMap();
 			setupLocationListener();
 		}
+	}
+
+	protected SupportMapFragment getMapFragment() {
+		return (SupportMapFragment) getActivity()
+				.getSupportFragmentManager().findFragmentById(getFragmentId());
+	}
+
+	protected int getFragmentId() {
+		return id;
 	}
 
 	public void setupMap() {
