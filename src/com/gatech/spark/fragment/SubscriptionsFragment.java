@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.gatech.spark.R;
 import com.gatech.spark.activity.LotExpandedActivity;
+import com.gatech.spark.database.SqliteHelper;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,14 +20,16 @@ import com.gatech.spark.activity.LotExpandedActivity;
  */
 public class SubscriptionsFragment extends Fragment {
 
+
     ListView list;
+    private SqliteHelper                dbHelper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_subscriptions, container, false);
         //((TextView) rootView.findViewById(android.R.id.text1)).setText( "Section" + "test");
         list = (ListView)rootView.findViewById(R.id.listView);
-
+        dbHelper = SqliteHelper.getDbHelper( getActivity().getApplicationContext() );
         list.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, new String[]{"Lot 1", "Lot 2", "Lot 3","Lot 4"} ));
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
