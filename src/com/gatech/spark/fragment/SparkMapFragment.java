@@ -48,8 +48,7 @@ public class SparkMapFragment extends SupportMapFragment {
 	}
 
 	public void setupMap() {
-		MarkerPlacer placer = new MarkerPlacer(this.map);
-		placer.addWhatsHotMarker(GT, 100);
+		MarkerPlacer.addWhatsHotMarker(map, GT);
 
 		map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
 
@@ -117,18 +116,12 @@ public class SparkMapFragment extends SupportMapFragment {
 	private void setLocationViewIfNeeded() {
 		if (map != null && !locationHasBeenSet) {
 			setLocationView(currentLoc);
-			addCurrentLocationMarker();
+			MarkerPlacer.addCurrentLocationMarker(map, currentLoc);
 			locationHasBeenSet = true;
 		}
 	}
 
 	private void setLocationView(LatLng loc) {
 		map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 12));
-	}
-
-	private void addCurrentLocationMarker() {
-		Marker marker = addMarker(currentLoc);
-		marker.setTitle("Current Location");
-		marker.setSnippet("a snippet");
 	}
 }

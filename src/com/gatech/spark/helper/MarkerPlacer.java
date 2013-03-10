@@ -12,19 +12,22 @@ import com.google.android.gms.maps.model.MarkerOptions;
  */
 public class MarkerPlacer {
 
-	private GoogleMap map;
-
-	public MarkerPlacer(GoogleMap map) {
-		this.map = map;
-	}
-
-	public Marker addWhatsHotMarker(LatLng position, float radius) {
+	public static Marker addWhatsHotMarker(GoogleMap map, LatLng position) {
 		MarkerOptions markerOptions = new MarkerOptions()
 			.position(position)
-			.anchor(0.5f, 0.5f)
 			.title("this is hot hot hot!")
 			.draggable(false)
+			.anchor(0.5f, 0.5f)
 			.icon(BitmapDescriptorFactory.fromResource(R.drawable.whats_hot));
+		return map.addMarker(markerOptions);
+	}
+
+	public static Marker addCurrentLocationMarker(GoogleMap map, LatLng position) {
+		MarkerOptions markerOptions = new MarkerOptions()
+			.position(position)
+			.title("Current Location")
+			.snippet("a snippet")
+			.draggable(false);
 		return map.addMarker(markerOptions);
 	}
 }
