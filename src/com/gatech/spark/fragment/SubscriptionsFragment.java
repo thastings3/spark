@@ -16,7 +16,7 @@ import com.gatech.spark.database.SqliteHelper;
 /**
  * Created with IntelliJ IDEA.
  * User: tyler
- * To change this template use File | Settings | File Templates.
+ * To change this template use File | Settings | File Templates.22o
  */
 public class SubscriptionsFragment extends Fragment {
 

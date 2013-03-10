@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
  * To change this template use File | Settings | File Templates.
  */
 public class SubscriptionTable {
+    //TODO  time location name, id
+    //FK to table_preferred lot location, id
 
     public static final String TB_SUBSCRIPTION = "tb_subscription";
     public static final String SUBSCRIPTION_LOT = "lot";
