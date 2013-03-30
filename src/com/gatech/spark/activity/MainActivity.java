@@ -81,6 +81,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         });
 
 
+
         // For each of the sections in the app, add a tab to the action bar.
         for (int i = 0; i < mAppSectionsPagerAdapter.getCount(); i++) {
             // Create a tab with text corresponding to the page title defined by the adapter.
