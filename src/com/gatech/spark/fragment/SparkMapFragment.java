@@ -1,63 +1,103 @@
 package com.gatech.spark.fragment;
 
-import com.gatech.spark.R;
-import com.gatech.spark.helper.MarkerPlacer;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
+import java.util.ArrayList;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
-public class SparkMapFragment extends SupportMapFragment {
+import com.gatech.spark.R;
+import com.gatech.spark.helper.HotSpot;
+import com.gatech.spark.helper.MarkerPlacer;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+
+public class SparkMapFragment extends Fragment {
 
 	private static final String TAG = "SparkMapFragment";
 	protected static final LatLng GT = new LatLng(33.78102, -84.400363);
-	private GoogleMap map;
+	protected static final LatLng SoNo = new LatLng(33.769872,-84.384527);
+	private View rootView;
+	private MapView mapView;
 	private LatLng currentLoc;
+	private LocationManager locationManager;
+	private LocationListener locationListener;
 	private boolean locationHasBeenSet = false;
-	protected int layout = R.layout.fragment_spark_map;
-	protected int id = R.id.spark_map;
+	private boolean whatsHotIsShowing = false;
+	private Button whatsHotButton;
+	private Iterable<HotSpot> hotSpotList;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
-		View view = inflater.inflate(layout, container, false);
-		setupMapIfNeeded();
-		return view;
+		rootView = inflater.inflate(R.layout.fragment_spark_map, container, false);
+		
+		initMapFeatures();
+		mapView = (MapView) rootView.findViewById(R.id.sparkMapView);
+		mapView.onCreate(savedInstanceState);
+		setupClickListeners();
+		setupLocationListener();
+		
+		whatsHotButton = (Button) rootView.findViewById(R.id.whatsHotButton);
+		hideWhatsHot();
+        whatsHotButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	toggleWhatsHot();
+            }
+        });
+        
+		return rootView;
+	}
+
+	/**
+	 * Initialize certain maps features, e.g., CameraUpdateFactory. See also
+	 * https://developers.google.com/maps/documentation/android/reference/com/google/android/gms/maps/MapsInitializer
+	 * http://stackoverflow.com/a/13824917
+	 */
+    private void initMapFeatures() {
+        try {
+            MapsInitializer.initialize(getActivity());
+        } catch (GooglePlayServicesNotAvailableException e) {
+            Log.d(TAG, "Google play services not available");
+            throw(new RuntimeException("Unable to initialize map", e));
+        }
+    }
+	
+	private MapView getMapView() {
+		return mapView;
+	}
+	
+	private GoogleMap getMap() {
+		return getMapView().getMap();
 	}
 
 	public void setupMapIfNeeded() {
+		GoogleMap map = getMap();
 		if (map == null) {
 			Log.d(TAG, "Getting map for first time");
-			map = getMapFragment().getMap();
-			setupMap();
+			map = getMapView().getMap();
+			setupClickListeners();
 			setupLocationListener();
 		}
 	}
 
-	protected SupportMapFragment getMapFragment() {
-		FragmentActivity act = getActivity();
-		FragmentManager mgr = act.getSupportFragmentManager();
-		return (SupportMapFragment) mgr.findFragmentById(id);
-//		return (SupportMapFragment) getActivity()
-//				.getSupportFragmentManager().findFragmentById(id);
-	}
-
-	public void setupMap() {
+	public void setupClickListeners() {
+		final GoogleMap map = getMap();
 		map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
 
 			@Override
@@ -87,13 +127,14 @@ public class SparkMapFragment extends SupportMapFragment {
 
 	private void setupLocationListener() {
 		// Acquire a reference to the system Location Manager
-		LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+		locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
 		// Define a listener that responds to location updates
-		LocationListener locationListener = new LocationListener() {
+		locationListener = new LocationListener() {
 			@Override
 			public void onLocationChanged(Location location) {
 				// Called when a new location is found by the network location provider.
+				Log.d(TAG, "Recieved new location: " + location.toString());
 				updateCurrentLocation(location);
 				setLocationViewIfNeeded();
 			}
@@ -107,18 +148,18 @@ public class SparkMapFragment extends SupportMapFragment {
 			@Override
 			public void onProviderDisabled(String provider) {}
 		};
-
-		// Register the listener with the Location Manager to receive location updates
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 	}
 
 	private void updateCurrentLocation(Location loc) {
 		currentLoc = new LatLng(loc.getLatitude(), loc.getLongitude());
+		Log.d(TAG, "New current location: " + currentLoc.toString());
 		setLocationViewIfNeeded();
 	}
 
 	private void setLocationViewIfNeeded() {
+		GoogleMap map = getMap();
 		if (map != null && !locationHasBeenSet) {
+			Log.d(TAG, "Updating current location view");
 			setLocationView(currentLoc);
 			MarkerPlacer.addCurrentLocationMarker(map, currentLoc);
 			locationHasBeenSet = true;
@@ -126,6 +167,87 @@ public class SparkMapFragment extends SupportMapFragment {
 	}
 
 	private void setLocationView(LatLng loc) {
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 12));
+		getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 12));
+	}
+	
+	private void showWhatsHot() {
+		hotSpotList = getHotSpots();
+		for (HotSpot spot : hotSpotList) {
+			spot.addMarker(getMap());
+		}
+		whatsHotIsShowing = true;
+		whatsHotButton.setText("Hide What's Hot");
+	}
+	
+	private void hideWhatsHot() {
+		if (hotSpotList != null) {
+			for (HotSpot spot : hotSpotList) {
+				spot.clearMarker();
+			}
+			hotSpotList = null;
+		}
+		whatsHotIsShowing = false;
+		whatsHotButton.setText("Show What's Hot");
+	}
+	
+	private void toggleWhatsHot() {
+		if (whatsHotIsShowing) {
+			hideWhatsHot();
+		} else {
+			showWhatsHot();
+		}
+	}
+	
+	private Iterable<HotSpot> getHotSpots() {
+		ArrayList<HotSpot> hotSpotList = new ArrayList<HotSpot>();
+		
+		// TODO: get this from the server
+		LatLng[] locList = {GT, SoNo};
+		for (LatLng loc : locList) {
+			hotSpotList.add(new HotSpot(loc));
+		}
+		return hotSpotList;
+	}
+	
+	// Must forward lifecycle methods to MapView object. See
+	// https://developers.google.com/maps/documentation/android/reference/com/google/android/gms/maps/MapView
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
+	
+	@Override
+	public void onResume() {
+		Log.d(TAG, "...resuming");
+		super.onResume();
+		// Register the listener with the Location Manager to receive location updates
+		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+		getMapView().onResume();
+	}
+	
+	@Override
+	public void onPause() {
+		Log.d(TAG, "pausing...");
+		super.onPause();
+		getMapView().onPause();
+		locationManager.removeUpdates(locationListener);
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		getMapView().onDestroy();
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		getMapView().onSaveInstanceState(outState);
+	}
+	
+	@Override
+	public void onLowMemory() {
+		super.onLowMemory();
+		getMapView().onLowMemory();
 	}
 }
