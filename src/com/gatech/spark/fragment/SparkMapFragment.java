@@ -2,6 +2,7 @@ package com.gatech.spark.fragment;
 
 import java.util.ArrayList;
 
+import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.location.Location;
@@ -13,11 +14,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.gatech.spark.R;
-import com.gatech.spark.helper.HotSpot;
-import com.gatech.spark.helper.MarkerPlacer;
+import com.gatech.spark.adapter.GenericArrayAdapter;
+import com.gatech.spark.helper.*;
+import com.gatech.spark.model.Place;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,6 +28,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 
 public class SparkMapFragment extends Fragment {
 
@@ -40,6 +44,7 @@ public class SparkMapFragment extends Fragment {
 	private boolean whatsHotIsShowing = false;
 	private Button whatsHotButton;
 	private Iterable<HotSpot> hotSpotList;
+
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -105,6 +110,39 @@ public class SparkMapFragment extends Fragment {
 				MarkerPlacer.addDraggableMarker(map, pos);
 			}
 		});
+
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if(marker.getSnippet().equalsIgnoreCase(MarkerPlacer.WHATS_HOT_SNIPPET))
+                {
+                    HttpRestClient.getPlaces(marker.getPosition().latitude, marker.getPosition().longitude, 500, new AsyncHttpResponseHandler(){
+                        @Override
+                        public void onSuccess(String s) {
+                            SaxParser parser = new SaxParser();
+                            HandlerReturnObject<ArrayList<Place>> handlerObject = parser.parsePlacesXmlResponse(s);
+                            if (handlerObject.isValid())
+                            {
+                                showListDialog(handlerObject.getObject());
+                            }
+                            else
+                            {
+                                CommonHelper.showLongToast(getActivity(), "Failed to find locations.");
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Throwable throwable, String s) {
+                            super.onFailure(throwable, s);
+                        }
+                    });
+                    //return true to suppress showing the default dialog.
+                    return true;
+                }
+                //return false to show the default behavior on the marker press.
+                return false;
+            }
+        });
 
 		map.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
 
@@ -250,4 +288,19 @@ public class SparkMapFragment extends Fragment {
 		super.onLowMemory();
 		getMapView().onLowMemory();
 	}
+
+
+    public void showListDialog(ArrayList<Place> places)
+    {
+        Dialog dialog = new Dialog(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View v = inflater.inflate(R.layout.places_list_layout, null, false);
+        GenericArrayAdapter<Place> adapter = new GenericArrayAdapter<Place>(getActivity(),places);
+        ListView list = (ListView)v.findViewById(R.id.placeList);
+        list.setAdapter(adapter);
+        dialog.setContentView(v);
+        dialog.show();
+
+    }
+
 }

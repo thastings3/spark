@@ -12,10 +12,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
  */
 public class MarkerPlacer {
 
+    public static final String WHATS_HOT_SNIPPET = "whats_hot_spippet";
+
 	public static Marker addWhatsHotMarker(GoogleMap map, LatLng position) {
 		MarkerOptions markerOptions = new MarkerOptions()
 			.position(position)
 			.title("this is hot hot hot!")
+            .snippet(WHATS_HOT_SNIPPET)
 			.draggable(false)
 			.anchor(0.5f, 0.5f)
 			.icon(BitmapDescriptorFactory.fromResource(R.drawable.whats_hot));
