@@ -2,8 +2,10 @@ package com.gatech.spark.fragment;
 
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,6 +35,11 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 public class SparkMapFragment extends Fragment {
 
 	private static final String TAG = "SparkMapFragment";
+	private static final String PREFS_NAME = "MapPreferences";
+	private static final String PREFS_KEY_WHATS_HOT = "whatsHotIsShowing";
+	private static final String PREFS_KEY_MAP_LOC_LAT = "mapLocLat";
+	private static final String PREFS_KEY_MAP_LOC_LNG = "mapLocLng";
+	private static final String PREFS_KEY_MAP_ZOOM = "mapZoom";
 	protected static final LatLng GT = new LatLng(33.78102, -84.400363);
 	protected static final LatLng SoNo = new LatLng(33.769872,-84.384527);
 	private MapView mapView;
@@ -45,6 +52,7 @@ public class SparkMapFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
+		Log.d(TAG, "Creating View");
 		View rootView = inflater.inflate(R.layout.fragment_spark_map, container, false);
 		
 		initMapFeatures();
@@ -58,10 +66,28 @@ public class SparkMapFragment extends Fragment {
         whatsHotButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
             	toggleWhatsHot();
-            }
-        });
-        
+			}
+		});
+
 		return rootView;
+	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		Activity activity = getActivity();
+		// Restore preferences
+		SharedPreferences settings =
+		        activity.getSharedPreferences(PREFS_NAME, Activity.MODE_PRIVATE);
+		whatsHotIsShowing = settings.getBoolean(PREFS_KEY_WHATS_HOT, false);
+		float curLocLat =
+		        settings.getFloat(PREFS_KEY_MAP_LOC_LAT, (float) GT.latitude);
+		float curLocLong =
+		        settings.getFloat(PREFS_KEY_MAP_LOC_LNG, (float) GT.longitude);
+		int zoom = settings.getInt("mapZoom", 6);
+
+		setWhatsHot(whatsHotIsShowing);
+		// setMapView(new LatLng(curLocLat, curLocLong), zoom);
 	}
 
 	/**
@@ -176,11 +202,14 @@ public class SparkMapFragment extends Fragment {
 	}
 	
 	private void toggleWhatsHot() {
-		if (whatsHotIsShowing) {
-			hideWhatsHot();
-		} else {
+		setWhatsHot(!whatsHotIsShowing);
+	}
+	
+	private void setWhatsHot(boolean shouldShow) {
+		if (shouldShow)
 			showWhatsHot();
-		}
+		else
+			hideWhatsHot();
 	}
 	
 	private Iterable<HotSpot> getHotSpots() {
@@ -199,6 +228,7 @@ public class SparkMapFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.d(TAG, "Creating fragment");
 	}
 	
 	@Override
@@ -214,6 +244,15 @@ public class SparkMapFragment extends Fragment {
 		Log.d(TAG, "pausing...");
 		super.onPause();
 		getMap().setMyLocationEnabled(false);
+		
+		// save settings
+		SharedPreferences settings =
+		        getActivity().getSharedPreferences(PREFS_NAME,
+		                                           Activity.MODE_PRIVATE);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putBoolean(PREFS_KEY_WHATS_HOT, whatsHotIsShowing);
+
+		editor.commit();
 		getMapView().onPause();
 	}
 	
