@@ -35,7 +35,6 @@ public class SparkMapFragment extends Fragment {
 	private static final String TAG = "SparkMapFragment";
 	protected static final LatLng GT = new LatLng(33.78102, -84.400363);
 	protected static final LatLng SoNo = new LatLng(33.769872,-84.384527);
-	private View rootView;
 	private MapView mapView;
 	private LatLng currentLoc;
 	private LocationManager locationManager;
@@ -50,7 +49,7 @@ public class SparkMapFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
-		rootView = inflater.inflate(R.layout.fragment_spark_map, container, false);
+		View rootView = inflater.inflate(R.layout.fragment_spark_map, container, false);
 		
 		initMapFeatures();
 		mapView = (MapView) rootView.findViewById(R.id.sparkMapView);
@@ -89,16 +88,6 @@ public class SparkMapFragment extends Fragment {
 	
 	private GoogleMap getMap() {
 		return getMapView().getMap();
-	}
-
-	public void setupMapIfNeeded() {
-		GoogleMap map = getMap();
-		if (map == null) {
-			Log.d(TAG, "Getting map for first time");
-			map = getMapView().getMap();
-			setupClickListeners();
-			setupLocationListener();
-		}
 	}
 
 	public void setupClickListeners() {
