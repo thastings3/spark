@@ -21,7 +21,9 @@ public class MainActivity extends Activity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        // Notice that setContentView() is not used, because we use the root
+        // android.R.id.content as the container for each fragment
+        // setContentView(R.layout.activity_main);
 
         dbHelper = SqliteHelper.getDbHelper( getApplicationContext() );
         final ActionBar actionBar = getActionBar();
