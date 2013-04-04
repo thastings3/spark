@@ -103,7 +103,7 @@ public class SparkMapFragment extends Fragment {
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                if(marker.getSnippet().equalsIgnoreCase(MarkerPlacer.WHATS_HOT_SNIPPET))
+                if(MarkerPlacer.isWhatsHotMarker(marker))
                 {
                     HttpRestClient.getPlaces(marker.getPosition().latitude, marker.getPosition().longitude, 500, new AsyncHttpResponseHandler(){
                         @Override

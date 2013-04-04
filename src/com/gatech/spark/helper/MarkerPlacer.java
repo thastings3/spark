@@ -25,6 +25,11 @@ public class MarkerPlacer {
 		return map.addMarker(markerOptions);
 	}
 
+	public static boolean isWhatsHotMarker(Marker marker) {
+		String snippet = marker.getSnippet();
+		return snippet != null && snippet.equalsIgnoreCase(WHATS_HOT_SNIPPET);
+	}
+
 	public static Marker addCurrentLocationMarker(GoogleMap map, LatLng position) {
 		MarkerOptions markerOptions = new MarkerOptions()
 			.position(position)
@@ -37,4 +42,5 @@ public class MarkerPlacer {
 	public static Marker addDraggableMarker(GoogleMap map, LatLng position) {
 		return map.addMarker(new MarkerOptions().position(position).draggable(true));
 	}
+
 }
