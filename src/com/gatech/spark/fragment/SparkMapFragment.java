@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import android.app.Dialog;
 import android.app.Fragment;
-import android.content.Context;
-import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -19,10 +17,14 @@ import android.widget.Toast;
 
 import com.gatech.spark.R;
 import com.gatech.spark.adapter.GenericArrayAdapter;
-import com.gatech.spark.helper.*;
+import com.gatech.spark.helper.CommonHelper;
+import com.gatech.spark.helper.HandlerReturnObject;
+import com.gatech.spark.helper.HotSpot;
+import com.gatech.spark.helper.HttpRestClient;
+import com.gatech.spark.helper.MarkerPlacer;
+import com.gatech.spark.helper.SaxParser;
 import com.gatech.spark.model.Place;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
@@ -36,10 +38,8 @@ public class SparkMapFragment extends Fragment {
 	protected static final LatLng GT = new LatLng(33.78102, -84.400363);
 	protected static final LatLng SoNo = new LatLng(33.769872,-84.384527);
 	private MapView mapView;
-	private LatLng currentLoc;
 	private LocationManager locationManager;
 	private LocationListener locationListener;
-	private boolean locationHasBeenSet = false;
 	private boolean whatsHotIsShowing = false;
 	private Button whatsHotButton;
 	private Iterable<HotSpot> hotSpotList;
@@ -153,48 +153,7 @@ public class SparkMapFragment extends Fragment {
 	}
 
 	private void setupLocationListener() {
-		// Acquire a reference to the system Location Manager
-		locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-
-		// Define a listener that responds to location updates
-		locationListener = new LocationListener() {
-			@Override
-			public void onLocationChanged(Location location) {
-				// Called when a new location is found by the network location provider.
-				Log.d(TAG, "Recieved new location: " + location.toString());
-				updateCurrentLocation(location);
-				setLocationViewIfNeeded();
-			}
-
-			@Override
-			public void onStatusChanged(String provider, int status, Bundle extras) {}
-
-			@Override
-			public void onProviderEnabled(String provider) {}
-
-			@Override
-			public void onProviderDisabled(String provider) {}
-		};
-	}
-
-	private void updateCurrentLocation(Location loc) {
-		currentLoc = new LatLng(loc.getLatitude(), loc.getLongitude());
-		Log.d(TAG, "New current location: " + currentLoc.toString());
-		setLocationViewIfNeeded();
-	}
-
-	private void setLocationViewIfNeeded() {
-		GoogleMap map = getMap();
-		if (map != null && !locationHasBeenSet) {
-			Log.d(TAG, "Updating current location view");
-			setLocationView(currentLoc);
-			MarkerPlacer.addCurrentLocationMarker(map, currentLoc);
-			locationHasBeenSet = true;
-		}
-	}
-
-	private void setLocationView(LatLng loc) {
-		getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 12));
+		getMap().setMyLocationEnabled(true);
 	}
 	
 	private void showWhatsHot() {
