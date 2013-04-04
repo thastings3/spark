@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import android.app.Dialog;
 import android.app.Fragment;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -53,7 +51,7 @@ public class SparkMapFragment extends Fragment {
 		mapView = (MapView) rootView.findViewById(R.id.sparkMapView);
 		mapView.onCreate(savedInstanceState);
 		setupClickListeners();
-		setupLocationListener();
+		setupMap();
 		
 		whatsHotButton = (Button) rootView.findViewById(R.id.whatsHotButton);
 		hideWhatsHot();
@@ -79,13 +77,20 @@ public class SparkMapFragment extends Fragment {
             throw(new RuntimeException("Unable to initialize map", e));
         }
     }
-	
+
 	private MapView getMapView() {
 		return mapView;
 	}
-	
+
 	private GoogleMap getMap() {
 		return getMapView().getMap();
+	}
+
+	private void setupMap() {
+		GoogleMap map = getMap();
+		if (map != null) {
+			getMap().setMyLocationEnabled(true);
+		}
 	}
 
 	public void setupClickListeners() {
@@ -150,10 +155,6 @@ public class SparkMapFragment extends Fragment {
 		});
 	}
 
-	private void setupLocationListener() {
-		getMap().setMyLocationEnabled(true);
-	}
-	
 	private void showWhatsHot() {
 		hotSpotList = getHotSpots();
 		for (HotSpot spot : hotSpotList) {
@@ -205,12 +206,14 @@ public class SparkMapFragment extends Fragment {
 		Log.d(TAG, "...resuming");
 		super.onResume();
 		getMapView().onResume();
+		getMap().setMyLocationEnabled(true);
 	}
 	
 	@Override
 	public void onPause() {
 		Log.d(TAG, "pausing...");
 		super.onPause();
+		getMap().setMyLocationEnabled(false);
 		getMapView().onPause();
 	}
 	
