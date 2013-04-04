@@ -25,9 +25,11 @@ import com.gatech.spark.helper.MarkerPlacer;
 import com.gatech.spark.helper.SaxParser;
 import com.gatech.spark.model.Place;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -75,19 +77,7 @@ public class SparkMapFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		Activity activity = getActivity();
-		// Restore preferences
-		SharedPreferences settings =
-		        activity.getSharedPreferences(PREFS_NAME, Activity.MODE_PRIVATE);
-		whatsHotIsShowing = settings.getBoolean(PREFS_KEY_WHATS_HOT, false);
-		float curLocLat =
-		        settings.getFloat(PREFS_KEY_MAP_LOC_LAT, (float) GT.latitude);
-		float curLocLong =
-		        settings.getFloat(PREFS_KEY_MAP_LOC_LNG, (float) GT.longitude);
-		int zoom = settings.getInt("mapZoom", 6);
-
-		setWhatsHot(whatsHotIsShowing);
-		// setMapView(new LatLng(curLocLat, curLocLong), zoom);
+		restorePreferences();
 	}
 
 	/**
@@ -222,6 +212,39 @@ public class SparkMapFragment extends Fragment {
 		}
 		return hotSpotList;
 	}
+
+	/**
+	 * Restores saved map view state from preferences file
+	 */
+	private void restorePreferences() {
+		Activity activity = getActivity();
+		SharedPreferences settings =
+		        activity.getSharedPreferences(PREFS_NAME, Activity.MODE_PRIVATE);
+		boolean hotIsShowing = settings.getBoolean(PREFS_KEY_WHATS_HOT, false);
+		setWhatsHot(hotIsShowing);
+
+		float mapLat = settings.getFloat(PREFS_KEY_MAP_LOC_LAT, (float) GT.latitude);
+		float mapLng = settings.getFloat(PREFS_KEY_MAP_LOC_LNG, (float) GT.longitude);
+		float mapZoom = settings.getFloat(PREFS_KEY_MAP_ZOOM, 13);
+		getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mapLat, mapLng), mapZoom));
+    }
+
+	/**
+	 * Saves map view state to preferences file
+	 */
+    private void storePreferences() {
+		SharedPreferences settings =
+		        getActivity().getSharedPreferences(PREFS_NAME,
+		                                           Activity.MODE_PRIVATE);
+		SharedPreferences.Editor editor = settings.edit();
+		CameraPosition position = getMap().getCameraPosition();
+		editor.putFloat(PREFS_KEY_MAP_LOC_LAT, (float) position.target.latitude);
+		editor.putFloat(PREFS_KEY_MAP_LOC_LNG, (float) position.target.longitude);
+		editor.putFloat(PREFS_KEY_MAP_ZOOM, position.zoom);
+		editor.putBoolean(PREFS_KEY_WHATS_HOT, whatsHotIsShowing);
+
+		editor.commit();
+    }
 	
 	// Must forward lifecycle methods to MapView object. See
 	// https://developers.google.com/maps/documentation/android/reference/com/google/android/gms/maps/MapView
@@ -244,15 +267,7 @@ public class SparkMapFragment extends Fragment {
 		Log.d(TAG, "pausing...");
 		super.onPause();
 		getMap().setMyLocationEnabled(false);
-		
-		// save settings
-		SharedPreferences settings =
-		        getActivity().getSharedPreferences(PREFS_NAME,
-		                                           Activity.MODE_PRIVATE);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putBoolean(PREFS_KEY_WHATS_HOT, whatsHotIsShowing);
-
-		editor.commit();
+		storePreferences();
 		getMapView().onPause();
 	}
 	
