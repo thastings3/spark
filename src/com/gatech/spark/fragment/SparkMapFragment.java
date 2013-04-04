@@ -38,8 +38,6 @@ public class SparkMapFragment extends Fragment {
 	protected static final LatLng GT = new LatLng(33.78102, -84.400363);
 	protected static final LatLng SoNo = new LatLng(33.769872,-84.384527);
 	private MapView mapView;
-	private LocationManager locationManager;
-	private LocationListener locationListener;
 	private boolean whatsHotIsShowing = false;
 	private Button whatsHotButton;
 	private Iterable<HotSpot> hotSpotList;
@@ -206,8 +204,6 @@ public class SparkMapFragment extends Fragment {
 	public void onResume() {
 		Log.d(TAG, "...resuming");
 		super.onResume();
-		// Register the listener with the Location Manager to receive location updates
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 		getMapView().onResume();
 	}
 	
@@ -216,7 +212,6 @@ public class SparkMapFragment extends Fragment {
 		Log.d(TAG, "pausing...");
 		super.onPause();
 		getMapView().onPause();
-		locationManager.removeUpdates(locationListener);
 	}
 	
 	@Override
