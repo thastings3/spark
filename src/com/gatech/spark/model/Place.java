@@ -1,5 +1,8 @@
 package com.gatech.spark.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 
 /**
@@ -9,7 +12,7 @@ import java.util.ArrayList;
  * Time: 8:35 PM
  * To change this template use File | Settings | File Templates.
  */
-public class Place {
+public class Place  implements Parcelable{
 
     private String name;
     private ArrayList<Type> types;
@@ -40,7 +43,23 @@ public class Place {
         photo = new Photo();
         priceLevel = 0;
         vicinity = "";
+    }
 
+    public Place(Parcel in)
+    {
+        this();
+        name = in.readString();
+        in.readTypedList( types, Type.CREATOR );
+        formattedAddress = in.readString();
+        location = in.readParcelable(Location.class.getClassLoader());
+        rating = in.readDouble();
+        iconLink = in.readString();
+        reference = in.readString();
+        id = in.readString();
+        in.readTypedList( events, Event.CREATOR );
+        photo = in.readParcelable(Photo.class.getClassLoader());
+        priceLevel = in.readInt();
+        vicinity = in.readString();
     }
 
     public String getVicinity() {
@@ -166,4 +185,38 @@ public class Place {
     public String toString() {
         return this.name;
     }
+
+    public int describeContents()
+    {
+        return 0;
+    }
+
+    public void writeToParcel( Parcel dest, int flags )
+    {
+
+        dest.writeString(this.name);
+        dest.writeTypedList(this.types );
+        dest.writeString(this.formattedAddress);
+        dest.writeParcelable( this.location, flags );
+        dest.writeDouble(this.rating);
+        dest.writeString(this.iconLink);
+        dest.writeString(this.reference );
+        dest.writeString(this.id );
+        dest.writeTypedList(this.events );
+        dest.writeParcelable( this.photo, flags );
+        dest.writeInt(this.priceLevel);
+        dest.writeString(this.vicinity );
+    }
+
+    public static final Parcelable.Creator<Place> CREATOR = new Parcelable.Creator<Place>() {
+        public Place createFromParcel( Parcel in )
+        {
+            return new Place( in );
+        }
+
+        public Place[] newArray( int size )
+        {
+            return new Place[size];
+        }
+    };
 }

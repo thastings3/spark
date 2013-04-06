@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -48,6 +49,7 @@ public class SparkMapFragment extends Fragment {
 	private boolean whatsHotIsShowing = false;
 	private Button whatsHotButton;
 	private Iterable<HotSpot> hotSpotList;
+    private ProgressDialog pDialog;
 
 
 	@Override
@@ -125,6 +127,16 @@ public class SparkMapFragment extends Fragment {
                 if(MarkerPlacer.isWhatsHotMarker(marker))
                 {
                     HttpRestClient.getPlaces(marker.getPosition().latitude, marker.getPosition().longitude, 500, new AsyncHttpResponseHandler(){
+
+                        @Override
+                        public void onStart() {
+                            pDialog = new ProgressDialog( getActivity() );
+                            pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                            pDialog.setCancelable( false );
+                            pDialog.setTitle( "Searching for data..." );
+                            pDialog.show();
+                        }
+
                         @Override
                         public void onSuccess(String s) {
                             SaxParser parser = new SaxParser();
@@ -142,6 +154,11 @@ public class SparkMapFragment extends Fragment {
                         @Override
                         public void onFailure(Throwable throwable, String s) {
                             super.onFailure(throwable, s);
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            pDialog.dismiss();
                         }
                     });
                     //return true to suppress showing the default dialog.
