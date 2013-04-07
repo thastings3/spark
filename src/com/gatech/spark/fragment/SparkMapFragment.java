@@ -10,9 +10,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -47,7 +49,7 @@ public class SparkMapFragment extends Fragment {
 	protected static final LatLng SoNo = new LatLng(33.769872,-84.384527);
 	private MapView mapView;
 	private boolean whatsHotIsShowing = false;
-	private Button whatsHotButton;
+	private MenuItem whatsHotItem;
 	private Iterable<HotSpot> hotSpotList;
     private ProgressDialog pDialog;
 
@@ -64,14 +66,6 @@ public class SparkMapFragment extends Fragment {
 		mapView.onCreate(savedInstanceState);
 		setupClickListeners();
 		setupMap();
-		
-		whatsHotButton = (Button) rootView.findViewById(R.id.whatsHotButton);
-		hideWhatsHot();
-        whatsHotButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-            	toggleWhatsHot();
-			}
-		});
 
 		return rootView;
 	}
@@ -188,13 +182,24 @@ public class SparkMapFragment extends Fragment {
 		});
 	}
 
+	private void toggleWhatsHot() {
+		setWhatsHot(!whatsHotIsShowing);
+	}
+
+	private void setWhatsHot(boolean shouldShow) {
+		if (shouldShow)
+			showWhatsHot();
+		else
+			hideWhatsHot();
+		setWhatsHotTitle();
+	}
+
 	private void showWhatsHot() {
 		hotSpotList = getHotSpots();
 		for (HotSpot spot : hotSpotList) {
 			spot.addMarker(getMap());
 		}
 		whatsHotIsShowing = true;
-		whatsHotButton.setText("Hide What's Hot");
 	}
 	
 	private void hideWhatsHot() {
@@ -205,18 +210,14 @@ public class SparkMapFragment extends Fragment {
 			hotSpotList = null;
 		}
 		whatsHotIsShowing = false;
-		whatsHotButton.setText("Show What's Hot");
 	}
 	
-	private void toggleWhatsHot() {
-		setWhatsHot(!whatsHotIsShowing);
-	}
-	
-	private void setWhatsHot(boolean shouldShow) {
-		if (shouldShow)
-			showWhatsHot();
-		else
-			hideWhatsHot();
+	public void setWhatsHotTitle() {
+		if (whatsHotItem != null) {
+			int titleRes =
+			        whatsHotIsShowing ? R.string.hide_whats_hot : R.string.show_whats_hot;
+			whatsHotItem.setTitle(titleRes);
+		}
 	}
 	
 	private Iterable<HotSpot> getHotSpots() {
@@ -234,6 +235,7 @@ public class SparkMapFragment extends Fragment {
 	 * Restores saved map view state from preferences file
 	 */
 	private void restorePreferences() {
+		Log.d(TAG, "Restoring Preferences");
 		Activity activity = getActivity();
 		SharedPreferences settings =
 		        activity.getSharedPreferences(PREFS_NAME, Activity.MODE_PRIVATE);
@@ -249,9 +251,10 @@ public class SparkMapFragment extends Fragment {
 	/**
 	 * Saves map view state to preferences file
 	 */
-    private void storePreferences() {
+	private void storePreferences() {
+		Log.d(TAG, "Storing preferences");
 		SharedPreferences settings =
-		        getActivity().getSharedPreferences(PREFS_NAME,
+				getActivity().getSharedPreferences(PREFS_NAME,
 		                                           Activity.MODE_PRIVATE);
 		SharedPreferences.Editor editor = settings.edit();
 		CameraPosition position = getMap().getCameraPosition();
@@ -262,12 +265,42 @@ public class SparkMapFragment extends Fragment {
 
 		editor.commit();
     }
-	
+
+	// Handling the menus
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.fragment_map, menu);
+		whatsHotItem = menu.findItem(R.id.whats_hot);
+		setWhatsHotTitle();
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.whats_hot:
+				toggleWhatsHot();
+				return true;
+			case R.id.search:
+				startSearch();
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+	}
+
+	private void startSearch() {
+		// TODO Auto-generated method stub
+		Toast.makeText(getActivity(), "Starting Search", Toast.LENGTH_SHORT)
+		     .show();
+	}
+
 	// Must forward lifecycle methods to MapView object. See
 	// https://developers.google.com/maps/documentation/android/reference/com/google/android/gms/maps/MapView
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
 		Log.d(TAG, "Creating fragment");
 	}
 	
