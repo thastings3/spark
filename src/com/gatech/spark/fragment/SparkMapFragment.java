@@ -1,12 +1,16 @@
 package com.gatech.spark.fragment;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +28,7 @@ import com.gatech.spark.helper.CommonHelper;
 import com.gatech.spark.helper.HandlerReturnObject;
 import com.gatech.spark.helper.HotSpot;
 import com.gatech.spark.helper.HttpRestClient;
+import com.gatech.spark.helper.LocationSearchResult;
 import com.gatech.spark.helper.MarkerPlacer;
 import com.gatech.spark.helper.SaxParser;
 import com.gatech.spark.model.Place;
@@ -35,6 +40,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.VisibleRegion;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 public class SparkMapFragment extends Fragment {
@@ -51,6 +57,7 @@ public class SparkMapFragment extends Fragment {
 	private boolean whatsHotIsShowing = false;
 	private MenuItem whatsHotItem;
 	private Iterable<HotSpot> hotSpotList;
+	private List<LocationSearchResult> searchResults;
     private ProgressDialog pDialog;
 
 
@@ -291,10 +298,87 @@ public class SparkMapFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setHasOptionsMenu(true);
 		Log.d(TAG, "Creating fragment");
+		setHasOptionsMenu(true);
 	}
-	
+
+	/**
+	 * Given a text query like "airport", populates the map with markers for the top results
+	 * @param query
+	 */
+	public void doSearch(String query) {
+		clearSearchResults();
+    	List<Address> addresses = searchForAddresses(query);
+
+        if(addresses != null && addresses.size() > 0) {
+        	addSearchResults(addresses);
+        } else {
+        	Toast.makeText(getActivity(), "invalid location", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+	/**
+	 * Searches for the top results for the `query`, and returns a list of
+	 * addresses as search results
+	 * 
+	 * @param query
+	 *            text query like "airport"
+	 * @return list of address most closely matching the query
+	 */
+	private List<Address> searchForAddresses(String query) {
+		List<Address> addresses = null;
+		if (Geocoder.isPresent()) {
+			Geocoder geocoder = new Geocoder(getActivity());
+    		VisibleRegion visible = getMap().getProjection().getVisibleRegion();
+    	    try {
+    	        addresses = geocoder.getFromLocationName(query, 5,
+    	                                                 visible.nearLeft.latitude, visible.nearLeft.longitude,
+    	                                                 visible.farRight.latitude, visible.farRight.longitude);
+            } catch (IOException e) {
+    	        e.printStackTrace();
+            }
+		}
+	    return addresses;
+    }
+
+	/**
+	 * Adds list of address to search results of map
+	 * @param addresses
+	 */
+	private void addSearchResults(List<Address> addresses) {
+	    for (Address addr : addresses) {
+	    	addSearchResult(addr);
+	    }
+    }
+
+	/**
+	 * Clears the map and search results. Afterwards, `searchResults` is an
+	 * empty list, ready to be populated
+	 */
+	private void clearSearchResults() {
+		if (searchResults == null) {
+			searchResults = new ArrayList<LocationSearchResult>();
+		} else {
+			for (LocationSearchResult res : searchResults) {
+				res.clearMarker();
+			}
+			searchResults.clear();
+		}
+	}
+
+	/**
+	 * Adds a single address `addr` to search results.
+	 * @param addr
+	 */
+	private void addSearchResult(Address addr) {
+		LocationSearchResult res = new LocationSearchResult(addr);
+		res.addMarker(getMap());
+		searchResults.add(res);
+		Toast.makeText(getActivity(),
+		               "add marker to " + addr + "(" + res.getLatLng() + ")",
+		               Toast.LENGTH_LONG).show();
+	}
+
 	@Override
 	public void onResume() {
 		Log.d(TAG, "...resuming");

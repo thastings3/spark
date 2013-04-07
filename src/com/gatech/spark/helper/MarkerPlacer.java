@@ -30,17 +30,17 @@ public class MarkerPlacer {
 		return snippet != null && snippet.equalsIgnoreCase(WHATS_HOT_SNIPPET);
 	}
 
-	public static Marker addCurrentLocationMarker(GoogleMap map, LatLng position) {
-		MarkerOptions markerOptions = new MarkerOptions()
-			.position(position)
-			.title("Current Location")
-			.snippet("a snippet")
-			.draggable(false);
-		return map.addMarker(markerOptions);
-	}
-
 	public static Marker addDraggableMarker(GoogleMap map, LatLng position) {
 		return map.addMarker(new MarkerOptions().position(position).draggable(true));
 	}
+
+	public static Marker addSearchResultMarker(GoogleMap map, LocationSearchResult res) {
+		MarkerOptions markerOptions = new MarkerOptions()
+            .position(res.getLatLng())
+            .title(res.getAddress().getAddressLine(0))
+            .snippet(res.getAddress().getAddressLine(1))
+            .draggable(false);
+		return map.addMarker(markerOptions);
+    }
 
 }

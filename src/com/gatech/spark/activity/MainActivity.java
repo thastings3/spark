@@ -1,8 +1,5 @@
 package com.gatech.spark.activity;
 
-import java.io.IOException;
-import java.util.List;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
@@ -10,8 +7,6 @@ import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,13 +17,17 @@ import com.gatech.spark.R;
 import com.gatech.spark.database.SqliteHelper;
 import com.gatech.spark.fragment.SparkMapFragment;
 import com.gatech.spark.fragment.SubscriptionsFragment;
-import com.google.android.gms.maps.model.LatLng;
 
 public class MainActivity extends Activity
 {
 
 	private static final String TAG = "spark.MainActivity";
+	private static final String MAP_FRAGMENT_TAG = "map";
+	private static final int MAP_FRAGMENT_INDEX = 0;
+	private static final String SUBSCRIPTIONS_FRAGMENT_TAG = "subscriptions";
+	private static final int SUBSCRIPTIONS_FRAGMENT_INDEX = 1;
     private SqliteHelper dbHelper;
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -39,7 +38,7 @@ public class MainActivity extends Activity
         // setContentView(R.layout.activity_main);
 
         dbHelper = SqliteHelper.getDbHelper( getApplicationContext() );
-        final ActionBar actionBar = getActionBar();
+        actionBar = getActionBar();
 
         // Specify that the Home/Up button should not be enabled, since there is no hierarchical
         // parent.
@@ -49,21 +48,23 @@ public class MainActivity extends Activity
 
         // Specify that we will be displaying tabs in the action bar.
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        
+
 		actionBar.addTab(
              actionBar.newTab()
                       .setText("Map")
                       .setTabListener(new TabListener<SparkMapFragment>(this,
-                                                                        "map",
-                                                                        SparkMapFragment.class)));
+                                                                        MAP_FRAGMENT_TAG,
+                                                                        SparkMapFragment.class)),
+             MAP_FRAGMENT_INDEX);
 		actionBar.addTab(
 	         actionBar.newTab()
 	                  .setText("Subscriptions")
 	                  .setTabListener(new TabListener<SubscriptionsFragment>(this,
-	                                                                        "subscriptions",
-	                                                                        SubscriptionsFragment.class)));
-        actionBar.setSelectedNavigationItem(1);
-        
+	                                                                         SUBSCRIPTIONS_FRAGMENT_TAG,
+	                                                                         SubscriptionsFragment.class)),
+	         SUBSCRIPTIONS_FRAGMENT_INDEX);
+        actionBar.setSelectedNavigationItem(SUBSCRIPTIONS_FRAGMENT_INDEX);
+
         handleIntent(getIntent());
     }
 
@@ -81,25 +82,16 @@ public class MainActivity extends Activity
 
     private void doSearch(String query) {
     	Toast.makeText(this, "Searching for " + query, Toast.LENGTH_SHORT).show();
-    	Geocoder geocoder = new Geocoder(this);
-    	List<Address> addresses = null;
-
-    	try {
-	        addresses = geocoder.getFromLocationName(query,5);
-        } catch (IOException e) {
-	        e.printStackTrace();
-        }
-
-        if(addresses != null && addresses.size() > 0) {
-        	Address addr = addresses.get(0);
-        	LatLng loc = new LatLng(addr.getLatitude(), addr.getLongitude());
-        	Toast.makeText(this, "add marker to " + addr + "(" + loc + ")", Toast.LENGTH_LONG).show();
-        } else {
-        	Toast.makeText(this, "invalid location", Toast.LENGTH_SHORT).show();
-        }
+    	loadSparkMap();
+    	SparkMapFragment sparkMap = (SparkMapFragment) getFragmentManager().findFragmentByTag(MAP_FRAGMENT_TAG);
+    	sparkMap.doSearch(query);
     }
 
-    @Override
+    private void loadSparkMap() {
+	    actionBar.setSelectedNavigationItem(MAP_FRAGMENT_INDEX);
+    }
+
+	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.activity_main, menu);
