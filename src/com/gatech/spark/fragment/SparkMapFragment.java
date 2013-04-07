@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
@@ -19,10 +20,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.gatech.spark.R;
+import com.gatech.spark.activity.PlaceExpandedActivity;
 import com.gatech.spark.adapter.GenericArrayAdapter;
 import com.gatech.spark.helper.CommonHelper;
 import com.gatech.spark.helper.HandlerReturnObject;
@@ -378,14 +381,24 @@ public class SparkMapFragment extends Fragment {
     public void showListDialog(ArrayList<Place> places)
     {
         Dialog dialog = new Dialog(getActivity());
+        dialog.setTitle("Locations");
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View v = inflater.inflate(R.layout.places_list_layout, null, false);
         GenericArrayAdapter<Place> adapter = new GenericArrayAdapter<Place>(getActivity(),places);
         ListView list = (ListView)v.findViewById(R.id.placeList);
+
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent( getActivity(), PlaceExpandedActivity.class );
+                intent.putExtra( PlaceExpandedActivity.PLACE,  ((Place)adapterView.getItemAtPosition(i)) );
+                startActivity( intent );
+            }
+        });
+
         list.setAdapter(adapter);
         dialog.setContentView(v);
         dialog.show();
-
     }
 
 	public class AddressSearcher {

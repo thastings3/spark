@@ -1,10 +1,7 @@
 package com.gatech.spark.helper;
 
 import android.content.Context;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.PersistentCookieStore;
-import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.*;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.protocol.HttpContext;
 
@@ -67,6 +64,18 @@ public class HttpRestClient {
         client.get( baseURL , params, responseHandler );
         //&name=harbour
         //String url = "https://maps.googleapis.com/maps/api/place/textsearch/xml?query=restaurants&sensor=true&location=33.792616,-84.397683&radius=1000&key=AIzaSyA_i2Z3XEQ74NQ71KpemvtPs6WuZwhwu4c";
+    }
+
+
+    public static void getPlaceReferencePhoto(String photoReference , BinaryHttpResponseHandler responseHandler)
+    {
+        RequestParams params = new RequestParams();
+        String baseURL = "https://maps.googleapis.com/maps/api/place/photo";
+        params.put( "maxwidth", "400" );
+        params.put( "photoreference", photoReference );
+        params.put( "sensor", "true" );
+        params.put( "key", API_KEY );
+        client.get( baseURL , params, responseHandler );
     }
 
 }

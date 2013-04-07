@@ -125,6 +125,10 @@ public class PlaceXmlHandler extends DefaultHandler
         {
             place.setPriceLevel(CommonHelper.convertStringToInt(buffer.toString()));
         }
+        else if ( localName.equals( "photo_reference" ) )
+        {
+            place.getPhoto().setPhotoReference(buffer.toString());
+        }
         //Todo add photo parser.
         //TODO add event parser.
         else if ( localName.equals( "result" ) )
