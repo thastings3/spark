@@ -281,18 +281,9 @@ public class SparkMapFragment extends Fragment {
 			case R.id.whats_hot:
 				toggleWhatsHot();
 				return true;
-			case R.id.search:
-				startSearch();
-				return true;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
-	}
-
-	private void startSearch() {
-		// TODO Auto-generated method stub
-		Toast.makeText(getActivity(), "Starting Search", Toast.LENGTH_SHORT)
-		     .show();
 	}
 
 	// Must forward lifecycle methods to MapView object. See
