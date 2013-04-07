@@ -308,47 +308,21 @@ public class SparkMapFragment extends Fragment {
 	 */
 	public void doSearch(String query) {
 		clearSearchResults();
-    	List<Address> addresses = searchForAddresses(query);
-
-        if(addresses != null && addresses.size() > 0) {
-        	addSearchResults(addresses);
-        } else {
-        	Toast.makeText(getActivity(), "invalid location", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-	/**
-	 * Searches for the top results for the `query`, and returns a list of
-	 * addresses as search results
-	 * 
-	 * @param query
-	 *            text query like "airport"
-	 * @return list of address most closely matching the query
-	 */
-	private List<Address> searchForAddresses(String query) {
-		List<Address> addresses = null;
-		if (Geocoder.isPresent()) {
-			Geocoder geocoder = new Geocoder(getActivity());
-    		VisibleRegion visible = getMap().getProjection().getVisibleRegion();
-    	    try {
-    	        addresses = geocoder.getFromLocationName(query, 5,
-    	                                                 visible.nearLeft.latitude, visible.nearLeft.longitude,
-    	                                                 visible.farRight.latitude, visible.farRight.longitude);
-            } catch (IOException e) {
-    	        e.printStackTrace();
-            }
-		}
-	    return addresses;
+		AddressSearcher searcher = new AddressSearcher();
+		searchResults = searcher.search(query, getMap());
+		addSearchResultsToMap();
     }
 
 	/**
 	 * Adds list of address to search results of map
 	 * @param addresses
 	 */
-	private void addSearchResults(List<Address> addresses) {
-	    for (Address addr : addresses) {
-	    	addSearchResult(addr);
-	    }
+	private void addSearchResultsToMap() {
+		if (searchResults != null) {
+    	    for (LocationSearchResult res : searchResults) {
+    	    	res.addMarker(getMap());
+    	    }
+		}
     }
 
 	/**
@@ -356,27 +330,12 @@ public class SparkMapFragment extends Fragment {
 	 * empty list, ready to be populated
 	 */
 	private void clearSearchResults() {
-		if (searchResults == null) {
-			searchResults = new ArrayList<LocationSearchResult>();
-		} else {
+		if (searchResults != null) {
 			for (LocationSearchResult res : searchResults) {
 				res.clearMarker();
 			}
 			searchResults.clear();
 		}
-	}
-
-	/**
-	 * Adds a single address `addr` to search results.
-	 * @param addr
-	 */
-	private void addSearchResult(Address addr) {
-		LocationSearchResult res = new LocationSearchResult(addr);
-		res.addMarker(getMap());
-		searchResults.add(res);
-		Toast.makeText(getActivity(),
-		               "add marker to " + addr + "(" + res.getLatLng() + ")",
-		               Toast.LENGTH_LONG).show();
 	}
 
 	@Override
@@ -428,4 +387,62 @@ public class SparkMapFragment extends Fragment {
 
     }
 
+	public class AddressSearcher {
+
+		/**
+		 * Searches for the top results for the `query`, and returns a list of
+		 * LocationSearchResults as search results
+		 * 
+		 * @param query
+		 *            text query like "airport"
+		 * @return list of LocationSearchResults most closely matching the query
+		 */
+		public List<LocationSearchResult> search(String query, GoogleMap map) {
+			List<LocationSearchResult> searchResults = new ArrayList<LocationSearchResult>();
+			List<Address> addresses = searchForAddresses(query, map);
+			if (addresses != null) {
+    			for (Address addr : addresses) {
+    	            searchResults.add(new LocationSearchResult(addr));
+                }
+			}
+			return searchResults;
+		}
+
+		/**
+		 * Searches for the top results for the `query`, and returns a list of
+		 * addresses as search results
+		 * 
+		 * @param query
+		 *            text query like "airport"
+		 * @return list of address most closely matching the query
+		 */
+		private List<Address> searchForAddresses(String query, GoogleMap map) {
+			if (Geocoder.isPresent()) {
+				VisibleRegion visibleRegion =
+						map.getProjection().getVisibleRegion();
+				return getAddressesInRegion(query, 5, visibleRegion);
+
+			}
+			return null;
+		}
+		
+		private List<Address> getAddressesInRegion(String query,
+		                                           int maxResults,
+		                                           VisibleRegion visible) {
+			List<Address> addresses = null;
+			Geocoder geocoder = new Geocoder(getActivity());
+			try {
+				addresses =
+				        geocoder.getFromLocationName(query,
+				                                     maxResults,
+				                                     visible.nearLeft.latitude,
+				                                     visible.nearLeft.longitude,
+				                                     visible.farRight.latitude,
+				                                     visible.farRight.longitude);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return addresses;
+		}
+	}
 }
