@@ -307,6 +307,7 @@ public class SparkMapFragment extends Fragment {
 	 * @param query
 	 */
 	public void doSearch(String query) {
+		Log.d(TAG, "searching for " + query);
 		clearSearchResults();
 		AddressSearcher searcher = new AddressSearcher();
 		searchResults = searcher.search(query, getMap());
@@ -389,6 +390,7 @@ public class SparkMapFragment extends Fragment {
 
 	public class AddressSearcher {
 
+		private static final String TAG = "spark.SparkMapFragment.AddressSearcher";
 		/**
 		 * Searches for the top results for the `query`, and returns a list of
 		 * LocationSearchResults as search results
@@ -417,7 +419,8 @@ public class SparkMapFragment extends Fragment {
 		 * @return list of address most closely matching the query
 		 */
 		private List<Address> searchForAddresses(String query, GoogleMap map) {
-			if (Geocoder.isPresent()) {
+			if (Geocoder.isPresent() && !query.isEmpty()) {
+				Log.d(TAG, "Searching for " + query);
 				VisibleRegion visibleRegion =
 						map.getProjection().getVisibleRegion();
 				return getAddressesInRegion(query, 5, visibleRegion);
