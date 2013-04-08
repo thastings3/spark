@@ -70,6 +70,10 @@ public class WhatsHotOverlay extends MapOverlay {
 
 	@Override
 	public void clear() {
+		for (WhatsHotOverlayItem item : hotSpotList) {
+			item.removeMarker();
+			item.hide();
+		}
 		hotSpotList.clear();
 	}
 
