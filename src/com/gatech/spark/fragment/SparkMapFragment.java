@@ -5,10 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.Fragment;
-import android.app.ProgressDialog;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
@@ -20,22 +17,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.gatech.spark.R;
-import com.gatech.spark.activity.PlaceExpandedActivity;
-import com.gatech.spark.adapter.GenericArrayAdapter;
-import com.gatech.spark.helper.CommonHelper;
-import com.gatech.spark.helper.HandlerReturnObject;
-import com.gatech.spark.helper.HttpRestClient;
 import com.gatech.spark.helper.LocationSearchResult;
 import com.gatech.spark.helper.MapOverlay;
 import com.gatech.spark.helper.MarkerPlacer;
-import com.gatech.spark.helper.SaxParser;
 import com.gatech.spark.helper.WhatsHotOverlay;
-import com.gatech.spark.model.Place;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -45,7 +33,6 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.VisibleRegion;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 
 public class SparkMapFragment extends Fragment {
 
@@ -59,7 +46,6 @@ public class SparkMapFragment extends Fragment {
 	private MapView mapView;
 	private MapOverlay whatsHotOverlay;
 	private List<LocationSearchResult> searchResults;
-    private ProgressDialog pDialog;
 
 
 	@Override
@@ -128,48 +114,7 @@ public class SparkMapFragment extends Fragment {
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                if(whatsHotOverlay.isMember(marker))
-                {
-                    HttpRestClient.getPlaces(marker.getPosition().latitude, marker.getPosition().longitude, 500, new AsyncHttpResponseHandler(){
-
-                        @Override
-                        public void onStart() {
-                            pDialog = new ProgressDialog( getActivity() );
-                            pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                            pDialog.setCancelable( false );
-                            pDialog.setTitle( "Searching for data..." );
-                            pDialog.show();
-                        }
-
-                        @Override
-                        public void onSuccess(String s) {
-                            SaxParser parser = new SaxParser();
-                            HandlerReturnObject<ArrayList<Place>> handlerObject = parser.parsePlacesXmlResponse(s);
-                            if (handlerObject.isValid())
-                            {
-                                showListDialog(handlerObject.getObject());
-                            }
-                            else
-                            {
-                                CommonHelper.showLongToast(getActivity(), "Failed to find locations.");
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Throwable throwable, String s) {
-                            super.onFailure(throwable, s);
-                        }
-
-                        @Override
-                        public void onFinish() {
-                            pDialog.dismiss();
-                        }
-                    });
-                    //return true to suppress showing the default dialog.
-                    return true;
-                }
-                //return false to show the default behavior on the marker press.
-                return false;
+            	return whatsHotOverlay.onMarkerClick(marker, getActivity());
             }
         });
 
@@ -329,30 +274,6 @@ public class SparkMapFragment extends Fragment {
 		super.onLowMemory();
 		getMapView().onLowMemory();
 	}
-
-
-    public void showListDialog(ArrayList<Place> places)
-    {
-        Dialog dialog = new Dialog(getActivity());
-        dialog.setTitle("Locations");
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View v = inflater.inflate(R.layout.places_list_layout, null, false);
-        GenericArrayAdapter<Place> adapter = new GenericArrayAdapter<Place>(getActivity(),places);
-        ListView list = (ListView)v.findViewById(R.id.placeList);
-
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent( getActivity(), PlaceExpandedActivity.class );
-                intent.putExtra( PlaceExpandedActivity.PLACE,  ((Place)adapterView.getItemAtPosition(i)) );
-                startActivity( intent );
-            }
-        });
-
-        list.setAdapter(adapter);
-        dialog.setContentView(v);
-        dialog.show();
-    }
 
 	public class AddressSearcher {
 
