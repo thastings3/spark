@@ -29,11 +29,12 @@ import com.gatech.spark.activity.PlaceExpandedActivity;
 import com.gatech.spark.adapter.GenericArrayAdapter;
 import com.gatech.spark.helper.CommonHelper;
 import com.gatech.spark.helper.HandlerReturnObject;
-import com.gatech.spark.helper.HotSpot;
 import com.gatech.spark.helper.HttpRestClient;
 import com.gatech.spark.helper.LocationSearchResult;
+import com.gatech.spark.helper.MapOverlay;
 import com.gatech.spark.helper.MarkerPlacer;
 import com.gatech.spark.helper.SaxParser;
+import com.gatech.spark.helper.WhatsHotOverlay;
 import com.gatech.spark.model.Place;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -50,16 +51,14 @@ public class SparkMapFragment extends Fragment {
 
 	private static final String TAG = "SparkMapFragment";
 	private static final String PREFS_NAME = "MapPreferences";
-	private static final String PREFS_KEY_WHATS_HOT = "whatsHotIsShowing";
 	private static final String PREFS_KEY_MAP_LOC_LAT = "mapLocLat";
 	private static final String PREFS_KEY_MAP_LOC_LNG = "mapLocLng";
 	private static final String PREFS_KEY_MAP_ZOOM = "mapZoom";
 	protected static final LatLng GT = new LatLng(33.78102, -84.400363);
 	protected static final LatLng SoNo = new LatLng(33.769872,-84.384527);
 	private MapView mapView;
-	private boolean whatsHotIsShowing = false;
-	private MenuItem whatsHotItem;
-	private Iterable<HotSpot> hotSpotList;
+	private MenuItem whatsHotMenuItem;
+	private MapOverlay whatsHotOverlay;
 	private List<LocationSearchResult> searchResults;
     private ProgressDialog pDialog;
 
@@ -76,6 +75,8 @@ public class SparkMapFragment extends Fragment {
 		mapView.onCreate(savedInstanceState);
 		setupClickListeners();
 		setupMap();
+		
+		whatsHotOverlay = new WhatsHotOverlay(getMap());
 
 		return rootView;
 	}
@@ -128,7 +129,7 @@ public class SparkMapFragment extends Fragment {
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                if(MarkerPlacer.isWhatsHotMarker(marker))
+                if(whatsHotOverlay.isMember(marker))
                 {
                     HttpRestClient.getPlaces(marker.getPosition().latitude, marker.getPosition().longitude, 500, new AsyncHttpResponseHandler(){
 
@@ -192,54 +193,6 @@ public class SparkMapFragment extends Fragment {
 		});
 	}
 
-	private void toggleWhatsHot() {
-		setWhatsHot(!whatsHotIsShowing);
-	}
-
-	private void setWhatsHot(boolean shouldShow) {
-		if (shouldShow)
-			showWhatsHot();
-		else
-			hideWhatsHot();
-		setWhatsHotTitle();
-	}
-
-	private void showWhatsHot() {
-		hotSpotList = getHotSpots();
-		for (HotSpot spot : hotSpotList) {
-			spot.addMarker(getMap());
-		}
-		whatsHotIsShowing = true;
-	}
-	
-	private void hideWhatsHot() {
-		if (hotSpotList != null) {
-			for (HotSpot spot : hotSpotList) {
-				spot.clearMarker();
-			}
-			hotSpotList = null;
-		}
-		whatsHotIsShowing = false;
-	}
-	
-	public void setWhatsHotTitle() {
-		if (whatsHotItem != null) {
-			int titleRes =
-			        whatsHotIsShowing ? R.string.hide_whats_hot : R.string.show_whats_hot;
-			whatsHotItem.setTitle(titleRes);
-		}
-	}
-	
-	private Iterable<HotSpot> getHotSpots() {
-		ArrayList<HotSpot> hotSpotList = new ArrayList<HotSpot>();
-		
-		// TODO: get this from the server
-		LatLng[] locList = {GT, SoNo};
-		for (LatLng loc : locList) {
-			hotSpotList.add(new HotSpot(loc));
-		}
-		return hotSpotList;
-	}
 
 	/**
 	 * Restores saved map view state from preferences file
@@ -249,8 +202,8 @@ public class SparkMapFragment extends Fragment {
 		Activity activity = getActivity();
 		SharedPreferences settings =
 		        activity.getSharedPreferences(PREFS_NAME, Activity.MODE_PRIVATE);
-		boolean hotIsShowing = settings.getBoolean(PREFS_KEY_WHATS_HOT, false);
-		setWhatsHot(hotIsShowing);
+		
+		whatsHotOverlay.load(settings);
 
 		float mapLat = settings.getFloat(PREFS_KEY_MAP_LOC_LAT, (float) GT.latitude);
 		float mapLng = settings.getFloat(PREFS_KEY_MAP_LOC_LNG, (float) GT.longitude);
@@ -271,9 +224,9 @@ public class SparkMapFragment extends Fragment {
 		editor.putFloat(PREFS_KEY_MAP_LOC_LAT, (float) position.target.latitude);
 		editor.putFloat(PREFS_KEY_MAP_LOC_LNG, (float) position.target.longitude);
 		editor.putFloat(PREFS_KEY_MAP_ZOOM, position.zoom);
-		editor.putBoolean(PREFS_KEY_WHATS_HOT, whatsHotIsShowing);
-
 		editor.commit();
+		
+		whatsHotOverlay.save(settings);
     }
 
 	// Handling the menus
@@ -281,7 +234,7 @@ public class SparkMapFragment extends Fragment {
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.fragment_map, menu);
-		whatsHotItem = menu.findItem(R.id.whats_hot);
+		whatsHotMenuItem = menu.findItem(R.id.whats_hot);
 		setWhatsHotTitle();
 	}
 
@@ -289,10 +242,23 @@ public class SparkMapFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.whats_hot:
-				toggleWhatsHot();
+				toggleWhatsHotOverlay();
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
+		}
+	}
+
+	private void toggleWhatsHotOverlay() {
+		whatsHotOverlay.toggle();
+		setWhatsHotTitle();
+    }
+
+	public void setWhatsHotTitle() {
+		if (whatsHotMenuItem != null) {
+			int titleResource = whatsHotOverlay.getVisibility() ?
+			    R.string.hide_whats_hot : R.string.show_whats_hot;
+			whatsHotMenuItem.setTitle(titleResource);
 		}
 	}
 

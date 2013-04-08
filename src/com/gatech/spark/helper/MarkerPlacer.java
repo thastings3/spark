@@ -12,24 +12,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
  */
 public class MarkerPlacer {
 
-    public static final String WHATS_HOT_SNIPPET = "whats_hot_spippet";
-
-	public static Marker addWhatsHotMarker(GoogleMap map, LatLng position) {
-		MarkerOptions markerOptions = new MarkerOptions()
-			.position(position)
-			.title("this is hot hot hot!")
-            .snippet(WHATS_HOT_SNIPPET)
-			.draggable(false)
-			.anchor(0.5f, 0.5f)
-			.icon(BitmapDescriptorFactory.fromResource(R.drawable.whats_hot));
-		return map.addMarker(markerOptions);
-	}
-
-	public static boolean isWhatsHotMarker(Marker marker) {
-		String snippet = marker.getSnippet();
-		return snippet != null && snippet.equalsIgnoreCase(WHATS_HOT_SNIPPET);
-	}
-
 	public static Marker addDraggableMarker(GoogleMap map, LatLng position) {
 		return map.addMarker(new MarkerOptions().position(position).draggable(true));
 	}
