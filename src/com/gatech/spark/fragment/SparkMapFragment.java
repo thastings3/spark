@@ -57,7 +57,6 @@ public class SparkMapFragment extends Fragment {
 	protected static final LatLng GT = new LatLng(33.78102, -84.400363);
 	protected static final LatLng SoNo = new LatLng(33.769872,-84.384527);
 	private MapView mapView;
-	private MenuItem whatsHotMenuItem;
 	private MapOverlay whatsHotOverlay;
 	private List<LocationSearchResult> searchResults;
     private ProgressDialog pDialog;
@@ -83,8 +82,8 @@ public class SparkMapFragment extends Fragment {
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
+		Log.d(TAG, "Activity Created");
 		super.onActivityCreated(savedInstanceState);
-		restorePreferences();
 	}
 
 	/**
@@ -233,32 +232,19 @@ public class SparkMapFragment extends Fragment {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
+		Log.d(TAG, "Creating options menu");
 		inflater.inflate(R.menu.fragment_map, menu);
-		whatsHotMenuItem = menu.findItem(R.id.whats_hot);
-		setWhatsHotTitle();
+		whatsHotOverlay.setMenuItem(menu.findItem(R.id.whats_hot));
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.whats_hot:
-				toggleWhatsHotOverlay();
+				whatsHotOverlay.toggle();
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
-		}
-	}
-
-	private void toggleWhatsHotOverlay() {
-		whatsHotOverlay.toggle();
-		setWhatsHotTitle();
-    }
-
-	public void setWhatsHotTitle() {
-		if (whatsHotMenuItem != null) {
-			int titleResource = whatsHotOverlay.getVisibility() ?
-			    R.string.hide_whats_hot : R.string.show_whats_hot;
-			whatsHotMenuItem.setTitle(titleResource);
 		}
 	}
 
@@ -313,6 +299,7 @@ public class SparkMapFragment extends Fragment {
 		Log.d(TAG, "...resuming");
 		super.onResume();
 		getMapView().onResume();
+		restorePreferences();
 		getMap().setMyLocationEnabled(true);
 	}
 	

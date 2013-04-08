@@ -6,6 +6,7 @@ package com.gatech.spark.helper;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.gatech.spark.R;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -30,6 +31,18 @@ public class WhatsHotOverlay extends MapOverlay {
 	public WhatsHotOverlay(GoogleMap map) {
 		super(map);
 		hotSpotList = new ArrayList<WhatsHotOverlayItem>();
+	}
+
+	/**
+	 * Sets menu title if the menu item is valid
+	 */
+	@Override
+	public void updateMenuItem() {
+		if (menuItem != null) {
+			int titleId =
+			        isVisible() ? R.string.hide_whats_hot : R.string.show_whats_hot;
+			menuItem.setTitle(titleId);
+		}
 	}
 
 	@Override
@@ -67,7 +80,7 @@ public class WhatsHotOverlay extends MapOverlay {
 	@Override
 	public void save(SharedPreferences settings) {
 		SharedPreferences.Editor editor = settings.edit();
-		editor.putBoolean(PREFS_KEY_VISIBILITY, getVisibility());
+		editor.putBoolean(PREFS_KEY_VISIBILITY, isVisible());
 		editor.commit();
 	}
 
