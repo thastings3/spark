@@ -23,6 +23,7 @@ public class WhatsHotOverlayItem extends OverlayItem {
 	}
 
 	public static boolean isMember(Marker marker) {
-		return marker.getSnippet().equalsIgnoreCase(WHATS_HOT_SNIPPET);
+		String snippet = marker.getSnippet();
+		return (snippet != null) && snippet.equalsIgnoreCase(WHATS_HOT_SNIPPET);
 	}
 }
