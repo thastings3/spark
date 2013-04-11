@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 import com.gatech.spark.R;
 import com.gatech.spark.helper.CommonHelper;
 import com.gatech.spark.model.Place;
+import com.loopj.android.image.SmartImageView;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,6 +20,8 @@ public class PlaceExpandedActivity extends Activity {
     private Place place;
     public static final String PLACE = "place_expanded_activity_place";
     public TextView nameTextView, addressTextView, priceTextView, openTextView, vicinityTextView, ratingTextView;
+    public SmartImageView iconImageView;
+    private Button findParkingButton;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +60,7 @@ public class PlaceExpandedActivity extends Activity {
 
         vicinityTextView.setText(place.getVicinity());
         ratingTextView.setText(place.getRating() + "");
+        iconImageView.setImageUrl(place.getIconLink());
     }
 
     private void findViewsById()
@@ -66,6 +71,8 @@ public class PlaceExpandedActivity extends Activity {
         openTextView = (TextView)findViewById(R.id.openTextView);
         vicinityTextView = (TextView)findViewById(R.id.vicinityTextView);
         ratingTextView = (TextView)findViewById(R.id.ratingTextView);
+        iconImageView = (SmartImageView)findViewById(R.id.iconImage);
+        findParkingButton = (Button) findViewById(R.id.findParkingButton);
     }
 
 }

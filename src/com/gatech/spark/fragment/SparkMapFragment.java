@@ -319,7 +319,6 @@ public class SparkMapFragment extends Fragment {
 
 	/**
 	 * Adds list of address to search results of map
-	 * @param addresses
 	 */
 	private void addSearchResultsToMap() {
 		if (searchResults != null) {
