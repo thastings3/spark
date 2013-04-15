@@ -27,6 +27,8 @@ public class Place  implements Parcelable{
     private Photo photo;
     private int priceLevel;
     private Boolean openNow;
+    private String phoneNumber;
+    private String website;
 
 
     public Place()
@@ -35,14 +37,16 @@ public class Place  implements Parcelable{
         types = new ArrayList<Type>();
         formattedAddress = "";
         location = new Location();
-        rating = 0;
+        rating = -1;
         iconLink = "";
         reference = "";
         id = "";
         events = new ArrayList<Event>();
         photo = new Photo();
-        priceLevel = 0;
+        priceLevel = -1;
         vicinity = "";
+        phoneNumber = "";
+        website = "";
     }
 
     public Place(Parcel in)
@@ -60,6 +64,8 @@ public class Place  implements Parcelable{
         photo = in.readParcelable(Photo.class.getClassLoader());
         priceLevel = in.readInt();
         vicinity = in.readString();
+        phoneNumber = in.readString();
+        website = in.readString();
     }
 
     public String getVicinity() {
@@ -181,6 +187,22 @@ public class Place  implements Parcelable{
         this.location.setLongitude(longitude);
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
     @Override
     public String toString() {
         return this.name;
@@ -206,6 +228,8 @@ public class Place  implements Parcelable{
         dest.writeParcelable( this.photo, flags );
         dest.writeInt(this.priceLevel);
         dest.writeString(this.vicinity );
+        dest.writeString(this.phoneNumber );
+        dest.writeString(this.website );
     }
 
     public static final Parcelable.Creator<Place> CREATOR = new Parcelable.Creator<Place>() {

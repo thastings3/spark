@@ -1,14 +1,21 @@
 package com.gatech.spark.activity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import com.gatech.spark.R;
 import com.gatech.spark.helper.CommonHelper;
+import com.gatech.spark.helper.HandlerReturnObject;
+import com.gatech.spark.helper.HttpRestClient;
+import com.gatech.spark.helper.SaxParser;
 import com.gatech.spark.model.Place;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.image.SmartImageView;
 
 /**
@@ -19,9 +26,10 @@ public class PlaceExpandedActivity extends Activity {
 
     private Place place;
     public static final String PLACE = "place_expanded_activity_place";
-    public TextView nameTextView, addressTextView, priceTextView, openTextView, vicinityTextView, ratingTextView;
+    public TextView nameTextView, addressTextView, priceTextView, openTextView, vicinityTextView, ratingTextView, phoneTextView,websiteTextView;
     public SmartImageView iconImageView;
     private Button findParkingButton;
+    private ProgressDialog pDialog;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,8 +45,43 @@ public class PlaceExpandedActivity extends Activity {
         else
         {
             //populate the ui
-            populateUI();
-            Log.e("photo", place.getPhoto().getPhotoReference());
+            HttpRestClient.getDetailedPlace(place.getReference(), new AsyncHttpResponseHandler(){
+                @Override
+                public void onStart() {
+                    pDialog = new ProgressDialog(PlaceExpandedActivity.this );
+                    pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    pDialog.setCancelable( false );
+                    pDialog.setTitle( "Searching for more data..." );
+                    pDialog.show();
+                }
+
+                @Override
+                public void onSuccess(String s) {
+                    SaxParser parser = new SaxParser();
+                    HandlerReturnObject<Place> handlerObject = parser.parseDetailedPlaceXmlResponse(s);
+                    if(handlerObject.isValid())
+                    {
+                        place = handlerObject.getObject();
+                        populateUI();
+                    }
+                    else
+                    {
+                        CommonHelper.showLongToast(PlaceExpandedActivity.this, "ERROR: " + handlerObject.getMessage());
+                    }
+                }
+
+                @Override
+                public void onFailure(Throwable throwable, String s) {
+                    CommonHelper.showLongToast(PlaceExpandedActivity.this, "ERROR: " + s);
+                }
+
+                @Override
+                public void onFinish() {
+                    pDialog.dismiss();
+                }
+            });
+            //populateUI();
+            //Log.e("photo", place.getPhoto().getPhotoReference());
         }
     }
 
@@ -46,7 +89,7 @@ public class PlaceExpandedActivity extends Activity {
     {
         nameTextView.setText(place.getName());
         addressTextView.setText(place.getFormattedAddress());
-        priceTextView.setText(place.getPriceLevel() + "");
+
         if(place.getOpenNow() != null)
         {
             if(place.getOpenNow())
@@ -59,7 +102,20 @@ public class PlaceExpandedActivity extends Activity {
         }
 
         vicinityTextView.setText(place.getVicinity());
-        ratingTextView.setText(place.getRating() + "");
+        if(place.getRating() != -1)
+        {
+            ratingTextView.setText(place.getRating() + " AVG RATING");
+        }
+
+        if(place.getPriceLevel() != -1)
+        {
+            priceTextView.setText(place.getPriceLevel() + " PRICE LEVEL");
+        }
+
+
+        phoneTextView.setText("Phone: " + place.getPhoneNumber());
+        websiteTextView.setText("Website: " + place.getWebsite());
+
         iconImageView.setImageUrl(place.getIconLink());
     }
 
@@ -73,6 +129,46 @@ public class PlaceExpandedActivity extends Activity {
         ratingTextView = (TextView)findViewById(R.id.ratingTextView);
         iconImageView = (SmartImageView)findViewById(R.id.iconImage);
         findParkingButton = (Button) findViewById(R.id.findParkingButton);
+
+        phoneTextView = (TextView)findViewById(R.id.phoneTextView);
+        websiteTextView = (TextView)findViewById(R.id.websiteTextView);
+        setupCall();
+        setupWebsite();
+    }
+
+    private void setupCall()
+    {
+        phoneTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!place.getPhoneNumber().isEmpty())
+                {
+                    String uri = "tel:" + place.getPhoneNumber() ;
+                    Intent intent = new Intent(Intent.ACTION_DIAL);
+                    intent.setData(Uri.parse(uri));
+                    startActivity(intent);
+                }
+            }
+        });
+
+    }
+
+    private void setupWebsite()
+    {
+        websiteTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                      if(!place.getWebsite().isEmpty())
+                      {
+                          String url = place.getWebsite();
+                          Intent i = new Intent(Intent.ACTION_VIEW);
+                          i.setData(Uri.parse(url));
+                          startActivity(i);
+                      }
+            }
+        });
+
+
     }
 
 }
