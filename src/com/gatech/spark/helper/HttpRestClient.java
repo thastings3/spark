@@ -78,4 +78,28 @@ public class HttpRestClient {
         client.get( baseURL , params, responseHandler );
     }
 
+    public static void getDetailedPlace(String reference , AsyncHttpResponseHandler responseHandler)
+    {
+        RequestParams params = new RequestParams();
+        String baseURL = "https://maps.googleapis.com/maps/api/place/details/xml";
+        params.put( "reference", reference );
+        params.put( "sensor", "false" );
+        params.put( "key", API_KEY );
+        client.get( baseURL , params, responseHandler );
+    }
+
+    public static void getLocationById(int id , AsyncHttpResponseHandler responseHandler)
+    {
+        String baseURL = "http://centspark6675.cloudapp.net:8080/spark/webresources/location/" + id;
+        client.get( baseURL , null , responseHandler );
+    }
+
+    public static void getChartingDateForLocation(int id , AsyncHttpResponseHandler responseHandler)
+    {
+        String baseURL = "http://centspark6675.cloudapp.net/render?target=parkinglot." + id + "&format=json";
+        client.get( baseURL , null , responseHandler );
+    }
+
+
+
 }

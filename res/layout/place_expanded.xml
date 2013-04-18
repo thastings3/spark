@@ -3,30 +3,69 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
-
+              android:layout_height="wrap_content"
+              style="@style/content_panel"
+              >
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+        <com.loopj.android.image.SmartImageView
+                android:layout_width="20sp"
+                android:layout_height="20sp"
+                android:id="@+id/iconImage"
+        />
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/nameTextView"
+                android:layout_gravity="left|center_vertical"
+                style="@style/header_font"
+        />
+    </LinearLayout>
+    <TextView
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/addressTextView"
+            android:layout_gravity="left|center_vertical"
+            android:textColor="@color/blue"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/nameTextView" android:layout_gravity="left|center_vertical"/>
+            android:id="@+id/phoneTextView" android:layout_gravity="left|center_vertical"
+            android:textColor="@color/blue"
+            android:clickable="true"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/addressTextView" android:layout_gravity="left|center_vertical"/>
+            android:id="@+id/vicinityTextView" android:layout_gravity="left|center_vertical"
+            android:textColor="@color/blue"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/vicinityTextView" android:layout_gravity="left|center_vertical"/>
+            android:id="@+id/ratingTextView" android:layout_gravity="left|center_vertical"
+            android:textColor="@color/blue"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/ratingTextView" android:layout_gravity="left|center_vertical"/>
+            android:id="@+id/priceLevelTextView" android:layout_gravity="left|center_vertical"
+            android:textColor="@color/blue"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/priceLevelTextView" android:layout_gravity="left|center_vertical"/>
+            android:id="@+id/websiteTextView" android:layout_gravity="left|center_vertical"
+            android:textColor="@color/blue"
+            android:clickable="true"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/openTextView" android:layout_gravity="left|center_vertical"/>
+    <Button
+            android:id="@+id/findParkingButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Find Parking"
+            style="@style/btn_submit"
+            />
 </LinearLayout>

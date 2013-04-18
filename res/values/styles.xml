@@ -17,4 +17,36 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
+    <style name="content_panel" >
+        <item name="android:background" >@drawable/content_panel</item >
+        <item name="android:paddingTop" >2sp</item >
+        <item name="android:paddingBottom" >2sp</item >
+        <item name="android:paddingLeft" >4sp</item >
+        <item name="android:paddingRight" >4sp</item >
+        <item name="android:layout_margin">4sp</item>
+    </style >
+
+    <style name="header_font" >
+        <item name="android:textColor" >@color/green</item >
+        <item name="android:shadowColor" >#000000</item >
+        <item name="android:shadowRadius" >1.5</item >
+        <item name="android:shadowDx" >0.0</item >
+        <item name="android:shadowDy" >1.0</item >
+    </style >
+
+    <style name="btn_text" >
+        <item name="android:textColor" >#FFFFFF</item >
+        <item name="android:shadowColor" >#99000000</item >
+        <item name="android:shadowRadius" >1.5</item >
+        <item name="android:shadowDx" >0.0</item >
+        <item name="android:shadowDy" >1.0</item >
+        <item name="android:textStyle" >bold</item >
+    </style >
+    <style name="btn_submit"
+           parent="@style/btn_text" >
+        <item name="android:paddingRight" >30sp</item >
+        <item name="android:paddingLeft" >30sp</item >
+        <item name="android:background" >@drawable/button_new_green</item >
+    </style >
+
 </resources>

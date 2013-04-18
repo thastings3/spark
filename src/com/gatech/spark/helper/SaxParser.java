@@ -1,5 +1,6 @@
 package com.gatech.spark.helper;
 
+import com.gatech.spark.handler.PlaceDetailsXmlHandler;
 import com.gatech.spark.handler.PlacesXmlHandler;
 import com.gatech.spark.model.Place;
 import org.xml.sax.InputSource;
@@ -60,6 +61,31 @@ public class SaxParser {
         {
             e.printStackTrace();
             return new HandlerReturnObject<ArrayList<Place>>( false, "Error Parsing XML.", new ArrayList<Place>() );
+        }
+    }
+
+    /**
+     * @param xml
+     *
+     * @return
+     */
+    public HandlerReturnObject<Place> parseDetailedPlaceXmlResponse( String xml )
+    {
+        try
+        {
+            XMLReader xmlreader = initializeReader();
+            PlaceDetailsXmlHandler handler = new PlaceDetailsXmlHandler(xmlreader);
+
+            // assign our handler
+            xmlreader.setContentHandler( handler );
+            // perform the synchronous parse
+            xmlreader.parse( new InputSource( new StringReader( xml ) ) );
+            return handler.retrieveHandlerObject();
+        }
+        catch ( Exception e )
+        {
+            e.printStackTrace();
+            return new HandlerReturnObject<Place>( false, "Error Parsing XML.", new Place() );
         }
     }
 }

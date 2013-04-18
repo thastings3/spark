@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="corner_radius"                >8dp</dimen>
+    <dimen name="tab_space_top"              >4dp</dimen>
+    <dimen name="tab_space"                  >0dp</dimen>
+    <dimen name="tab_space_plus1"          >3dp</dimen>
+    <dimen name="tab_space_bottom_line"      >36sp</dimen>
+    <dimen name="tab_space_unselected_top">6sp</dimen>
+    <dimen name="btn_new_radius">3dp</dimen>
+    <dimen name="btn_new_padding1">9dp</dimen><dimen name="btn_new_padding2">10dp</dimen>
+    <dimen name="btn_new_padding3">11dp</dimen>
+
+    <dimen name="btn_new_spacing_outer">0dp</dimen>
+    <dimen name="btn_new_spacing_middle">1dp</dimen>
+    <dimen name="btn_new_spacing_inner">2.5dp</dimen>
+    <dimen name="btn_titlebar_size">40dp</dimen>
+    <dimen name="btn_titlebar_padding">6dp</dimen>
+</resources>
