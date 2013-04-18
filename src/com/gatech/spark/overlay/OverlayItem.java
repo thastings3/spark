@@ -1,7 +1,9 @@
 /**
  * 
  */
-package com.gatech.spark.helper;
+package com.gatech.spark.overlay;
+
+import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
@@ -14,6 +16,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
  *
  */
 public abstract class OverlayItem {
+	private static final String TAG = "spark.OverlayItem";
+
 	private Marker marker;
 	private LatLng loc;
 
@@ -46,6 +50,7 @@ public abstract class OverlayItem {
 	
 	public void show() {
 		if (marker != null) {
+			Log.d(TAG, "Seting marker at " + marker.getPosition() + " to visible");
 			marker.setVisible(true);
 		}
 	}

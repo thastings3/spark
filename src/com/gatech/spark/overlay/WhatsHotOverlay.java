@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.gatech.spark.helper;
+package com.gatech.spark.overlay;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,6 +9,11 @@ import java.util.Collection;
 import com.gatech.spark.R;
 import com.gatech.spark.activity.PlaceExpandedActivity;
 import com.gatech.spark.adapter.GenericArrayAdapter;
+import com.gatech.spark.fragment.SparkMapFragment;
+import com.gatech.spark.helper.CommonHelper;
+import com.gatech.spark.helper.HandlerReturnObject;
+import com.gatech.spark.helper.HttpRestClient;
+import com.gatech.spark.helper.SaxParser;
 import com.gatech.spark.model.Place;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
@@ -39,9 +44,10 @@ public class WhatsHotOverlay extends MapOverlay {
 	        "WhatsHotOverlay.Visibility";
 
 	private Collection<WhatsHotOverlayItem> hotSpotList;
+	private boolean isVisible;
 
-	public WhatsHotOverlay(GoogleMap map) {
-		super(map);
+	public WhatsHotOverlay(SparkMapFragment fragment, GoogleMap map) {
+		super(fragment, map);
 		hotSpotList = new ArrayList<WhatsHotOverlayItem>();
 	}
 
@@ -112,7 +118,7 @@ public class WhatsHotOverlay extends MapOverlay {
 	}
 	
 	@Override
-	public boolean onMarkerClick(Marker marker, final Activity activity) {
+	public boolean onMarkerClick(Marker marker) {
 		 if(isMember(marker))
          {
              HttpRestClient.getPlaces(marker.getPosition().latitude, marker.getPosition().longitude, 500, new AsyncHttpResponseHandler(){
@@ -120,7 +126,7 @@ public class WhatsHotOverlay extends MapOverlay {
 
                  @Override
                  public void onStart() {
-                     pDialog = new ProgressDialog(activity);
+                     pDialog = new ProgressDialog(getActivity());
                      pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                      pDialog.setCancelable( false );
                      pDialog.setTitle( "Searching for data..." );
@@ -133,11 +139,11 @@ public class WhatsHotOverlay extends MapOverlay {
                      HandlerReturnObject<ArrayList<Place>> handlerObject = parser.parsePlacesXmlResponse(s);
                      if (handlerObject.isValid())
                      {
-                         showListDialog(handlerObject.getObject(), activity);
+                         showListDialog(handlerObject.getObject(), getActivity());
                      }
                      else
                      {
-                         CommonHelper.showLongToast(activity, "Failed to find locations.");
+                         CommonHelper.showLongToast(getActivity(), "Failed to find locations.");
                      }
                  }
 
@@ -179,5 +185,21 @@ public class WhatsHotOverlay extends MapOverlay {
         list.setAdapter(adapter);
         dialog.setContentView(v);
         dialog.show();
+    }
+
+	@Override
+    public boolean isVisible() {
+	    return isVisible;
+    }
+
+	@Override
+    public void setVisibility(boolean visibility) {
+		this.isVisible = visibility;
+		if (visibility) {
+			show();
+		} else {
+			hide();
+		}
+		updateMenuItem();
     }
 }

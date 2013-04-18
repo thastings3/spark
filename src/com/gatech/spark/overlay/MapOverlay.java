@@ -1,22 +1,40 @@
-package com.gatech.spark.helper;
+package com.gatech.spark.overlay;
 
+import com.gatech.spark.fragment.SparkMapFragment;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.MenuItem;
 
 public abstract class MapOverlay {
 
+	private static final String TAG = "spark.MapOverlay";
+	private SparkMapFragment fragment;
 	protected GoogleMap map;
 	protected MenuItem menuItem;
-	protected boolean isVisible;
 
-	public MapOverlay(GoogleMap map) {
+	public MapOverlay(SparkMapFragment fragment, GoogleMap map) {
+		this.fragment = fragment;
 		this.map = map;
 		this.menuItem = null;
-		this.isVisible = false;
+	}
+
+	/**
+	 * Gets the current active activity.
+	 */
+	public final Activity getActivity() {
+		return fragment.getActivity();
+	}
+	
+	public final GoogleMap getMap() {
+		return fragment.getMap();
+	}
+	
+	public final SparkMapFragment getFragment() {
+		return fragment;
 	}
 
 	/**
@@ -24,9 +42,7 @@ public abstract class MapOverlay {
 	 * 
 	 * @return the current visibility
 	 */
-	public boolean isVisible() {
-		return isVisible;
-	}
+	public abstract boolean isVisible();
 
 	/**
 	 * Sets the menu item for this overlay
@@ -57,7 +73,7 @@ public abstract class MapOverlay {
 	 * Toggle overlay items visibility
 	 */
 	public void toggle() {
-		setVisibility(!isVisible);
+		setVisibility(!isVisible());
 	}
 
 	/**
@@ -65,16 +81,7 @@ public abstract class MapOverlay {
 	 * 
 	 * @param visibility
 	 */
-	public final void setVisibility(boolean visibility) {
-		if (visibility) {
-			show();
-		} else {
-			hide();
-		}
-		isVisible = visibility;
-		updateMenuItem();
-	}
-
+	public abstract void setVisibility(boolean visibility);
 	/**
 	 * Show overlay items on map
 	 */
@@ -112,10 +119,9 @@ public abstract class MapOverlay {
 	 * the marker that was clicked is of this overlay type
 	 * 
 	 * @param marker	Marker that was clicked
-	 * @param activity	Current active activity
 	 * @return			True if the click event was handled by this overlay, else false
 	 */
-	public boolean onMarkerClick(Marker marker, Activity activity) {
+	public boolean onMarkerClick(Marker marker) {
 		return false;
 	}
 

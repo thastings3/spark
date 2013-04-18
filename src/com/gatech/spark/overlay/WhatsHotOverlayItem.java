@@ -1,4 +1,4 @@
-package com.gatech.spark.helper;
+package com.gatech.spark.overlay;
 
 import com.gatech.spark.R;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
