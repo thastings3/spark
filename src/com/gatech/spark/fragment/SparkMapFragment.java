@@ -1,5 +1,7 @@
 package com.gatech.spark.fragment;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.SharedPreferences;
@@ -15,6 +17,7 @@ import android.view.ViewGroup;
 import com.gatech.spark.R;
 import com.gatech.spark.overlay.MapOverlay;
 import com.gatech.spark.overlay.SearchResultsOverlay;
+import com.gatech.spark.overlay.SubscriptionsOverlay;
 import com.gatech.spark.overlay.WhatsHotOverlay;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -36,6 +39,8 @@ public class SparkMapFragment extends Fragment {
 	private MapView mapView;
 	private MapOverlay whatsHotOverlay;
 	private MapOverlay searchResultsOverlay;
+	private MapOverlay subscriptionsOverlay;
+	private ArrayList<MapOverlay> allOverlays;
 
 
 	@Override
@@ -51,8 +56,13 @@ public class SparkMapFragment extends Fragment {
 		setupClickListeners();
 		setupMap();
 		
+		allOverlays = new ArrayList<MapOverlay>();
 		whatsHotOverlay = new WhatsHotOverlay(this, getMap());
+		allOverlays.add(whatsHotOverlay);
 		searchResultsOverlay = new SearchResultsOverlay(this, getMap());
+		allOverlays.add(searchResultsOverlay);
+		subscriptionsOverlay = new SubscriptionsOverlay(this, getMap());
+		allOverlays.add(subscriptionsOverlay);
 
 		return rootView;
 	}
@@ -98,8 +108,12 @@ public class SparkMapFragment extends Fragment {
 		map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
 			@Override
 			public boolean onMarkerClick(Marker marker) {
-				return whatsHotOverlay.onMarkerClick(marker) ||
-				       searchResultsOverlay.onMarkerClick(marker);
+				for (MapOverlay overlay : allOverlays) {
+					if (overlay.onMarkerClick(marker)) {
+						return true;
+					}
+				}
+				return false;
 			}
 		});
 	}
@@ -115,9 +129,10 @@ public class SparkMapFragment extends Fragment {
 			float mapLng = settings.getFloat(PREFS_KEY_MAP_LOC_LNG, (float) GT.longitude);
 			float mapZoom = settings.getFloat(PREFS_KEY_MAP_ZOOM, 13);
 			getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mapLat, mapLng), mapZoom));
-			
-			whatsHotOverlay.load(settings);
-			searchResultsOverlay.load(settings);
+
+			for (MapOverlay overlay : allOverlays) {
+	            overlay.load(settings);
+            }
         } catch (Exception e) {
         	clearPreferences();
         }
@@ -138,8 +153,9 @@ public class SparkMapFragment extends Fragment {
 		editor.putFloat(PREFS_KEY_MAP_ZOOM, position.zoom);
 		editor.commit();
 
-		whatsHotOverlay.save(settings);
-		searchResultsOverlay.save(settings);
+		for (MapOverlay overlay : allOverlays) {
+            overlay.save(settings);
+        }
 	}
 
 	private void clearPreferences() {
