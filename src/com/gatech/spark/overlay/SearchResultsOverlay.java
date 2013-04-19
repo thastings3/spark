@@ -220,42 +220,7 @@ public class SearchResultsOverlay extends MapOverlay {
 			                         getCenter().latitude,
 			                         getCenter().longitude,
 			                         (int) getViewableRadiusInMeters(),
-			                         new AsyncHttpResponseHandler(){
-				ProgressDialog pDialog;
-
-				@Override
-				public void onStart() {
-					pDialog = new ProgressDialog(getActivity());
-					pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-					pDialog.setCancelable( false );
-					pDialog.setTitle( "Searching for " + query + "..." );
-					pDialog.show();
-				}
-
-				@Override
-				public void onSuccess(String s) {
-					SaxParser parser = new SaxParser();
-					HandlerReturnObject<ArrayList<Place>> handlerObject = parser.parsePlacesXmlResponse(s);
-					if (handlerObject.isValid())
-					{
-						onSearchCompleted(handlerObject.getObject());
-					}
-					else
-					{
-						CommonHelper.showLongToast(getActivity(), "Failed to find locations.");
-					}
-				}
-
-				@Override
-				public void onFailure(Throwable throwable, String s) {
-					super.onFailure(throwable, s);
-				}
-
-				@Override
-				public void onFinish() {
-					pDialog.dismiss();
-				}
-			});
+			                         new PlacesResponseHandler(this));
 		}
 
 		private void onSearchCompleted(ArrayList<Place> placeList) {
@@ -268,6 +233,49 @@ public class SearchResultsOverlay extends MapOverlay {
 				searchResults.add(new SearchResultOverlayItem(place));
 			}
 			onSearchResultsUpdated();
+		}
+
+		private class PlacesResponseHandler extends AsyncHttpResponseHandler {
+			ProgressDialog pDialog;
+			PlaceSearcher searcher;
+
+			public PlacesResponseHandler(PlaceSearcher searcher) {
+				super();
+				this.searcher = searcher;
+			}
+
+			@Override
+			public void onStart() {
+				pDialog = new ProgressDialog(getActivity());
+				pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+				pDialog.setCancelable( false );
+				pDialog.setTitle( "Searching for " + query + "..." );
+				pDialog.show();
+			}
+
+			@Override
+			public void onSuccess(String s) {
+				SaxParser parser = new SaxParser();
+				HandlerReturnObject<ArrayList<Place>> handlerObject = parser.parsePlacesXmlResponse(s);
+				if (handlerObject.isValid())
+				{
+					searcher.onSearchCompleted(handlerObject.getObject());
+				}
+				else
+				{
+					CommonHelper.showLongToast(getActivity(), "Failed to find locations.");
+				}
+			}
+
+			@Override
+			public void onFailure(Throwable throwable, String s) {
+				super.onFailure(throwable, s);
+			}
+
+			@Override
+			public void onFinish() {
+				pDialog.dismiss();
+			}
 		}
 	}
 }
