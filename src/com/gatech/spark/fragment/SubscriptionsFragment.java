@@ -14,7 +14,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.gatech.spark.R;
 import com.gatech.spark.activity.LotExpandedActivity;
+import com.gatech.spark.adapter.SubscriptionsListViewAdapter;
 import com.gatech.spark.database.SqliteHelper;
+import com.gatech.spark.model.Subscription;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,13 +33,28 @@ public class SubscriptionsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_subscriptions, container, false);
         //((TextView) rootView.findViewById(android.R.id.text1)).setText( "Section" + "test");
-        list = (ListView)rootView.findViewById(R.id.listView);
         dbHelper = SqliteHelper.getDbHelper( getActivity().getApplicationContext() );
-        list.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, new String[]{"Lot 1", "Lot 2", "Lot 3","Lot 4"} ));
+
+        //TODO REMOVE TEST CODE
+        if(dbHelper.getSubscriptions().getObject().size() == 0)
+        {
+            //FIXME insert in fake data here
+            dbHelper.insertSubscription(new Subscription("Turner Field"    , 33.73928,-84.389379));
+            dbHelper.insertSubscription(new Subscription("Atlantic Station", 33.792723,-84.396524));
+            dbHelper.insertSubscription(new Subscription("Georgia Tech"    , 33.775905,-84.394679));
+
+        }
+
+
+        list = (ListView)rootView.findViewById(R.id.listView);
+
+        list.setAdapter(new SubscriptionsListViewAdapter(getActivity(), dbHelper.getSubscriptions().getObject() ));
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                //TODO where should we redirect??? OR DO WE just show a dialog to start navigation??
                 Intent intent = new Intent(getActivity(),LotExpandedActivity.class );
+                intent.putExtra(LotExpandedActivity.SUBSCRIPTION, (Subscription)adapterView.getSelectedItem() );
                 startActivity(intent);
             }
         });

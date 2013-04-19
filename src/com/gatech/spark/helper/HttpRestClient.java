@@ -101,5 +101,25 @@ public class HttpRestClient {
     }
 
 
+    /**
+     * Gets the list of locations from our DB
+     * @param responseHandler
+     */
+    public static void getSparkLocations(AsyncHttpResponseHandler responseHandler)
+    {
+        String baseURL = "http://centspark6675.cloudapp.net:8080/spark/webresources/location";
+        client.get( baseURL , null , responseHandler );
+    }
+
+    /**
+     * Gets the list of addresses from our DB
+     * @param responseHandler
+     */
+    public static void getSparkAddresses(AsyncHttpResponseHandler responseHandler)
+    {
+        String baseURL = "http://centspark6675.cloudapp.net:8080/spark/webresources/address";
+        client.get( baseURL , null , responseHandler );
+    }
+
 
 }

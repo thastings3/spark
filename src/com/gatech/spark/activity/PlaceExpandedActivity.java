@@ -113,8 +113,8 @@ public class PlaceExpandedActivity extends Activity {
         }
 
 
-        phoneTextView.setText("Phone: " + place.getPhoneNumber());
-        websiteTextView.setText("Website: " + place.getWebsite());
+        phoneTextView.setText(place.getPhoneNumber());
+        websiteTextView.setText(place.getWebsite());
 
         iconImageView.setImageUrl(place.getIconLink());
     }
