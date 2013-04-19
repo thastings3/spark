@@ -1,37 +1,38 @@
 package com.gatech.spark.overlay;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
-import android.location.Address;
-import android.location.Geocoder;
+import android.location.Location;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.gatech.spark.R;
 import com.gatech.spark.fragment.SparkMapFragment;
+import com.gatech.spark.helper.CommonHelper;
+import com.gatech.spark.helper.HandlerReturnObject;
+import com.gatech.spark.helper.HttpRestClient;
+import com.gatech.spark.helper.SaxParser;
+import com.gatech.spark.model.Place;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 
 public class SearchResultsOverlay extends MapOverlay {
 	private static final String TAG = "spark.SearchResultsOverlay";
 	private static final String PREFS_KEY_SHOW_ON_LOAD =
-	        "SearchResultsOverlay.Visibility";
+		"SearchResultsOverlay.Visibility";
 	private static final String PREFS_KEY_QUERY =
-			"SearchResultsOverlay.Query";
-	private static final String PREFS_KEY_BOUNDS =
-			"SearchResultsOverlay.Bounds";
+		"SearchResultsOverlay.Query";
 	private static final int MENU_ITEM_ID = R.id.search_again;
 
 	private Collection<SearchResultOverlayItem> searchResults;
 	private String query;
-	private LatLngBounds searchBounds;
 	private boolean isVisible;	// currently visible
 	private boolean showOnLoad;	// do the search the next time we load
 
@@ -57,38 +58,40 @@ public class SearchResultsOverlay extends MapOverlay {
 	}
 
 	@Override
-    public void setVisibility(boolean visibility) {
+	public void setVisibility(boolean visibility) {
 		this.isVisible = visibility;
 		this.showOnLoad = visibility;
-    }
+	}
 
 	@Override
-    public boolean isVisible() {
-	    return this.isVisible;
-    }
-
+	public boolean isVisible() {
+		return this.isVisible;
+	}
 
 	@Override
 	public void updateMenuItem() {
 		if (query.isEmpty()) {
-	        menuItem.setVisible(false);
-        } else {
-        	menuItem.setTitle(query);
-        	menuItem.setVisible(true);
-        }
+			menuItem.setVisible(false);
+		} else {
+			menuItem.setTitle(query);
+			menuItem.setVisible(true);
+		}
 	}
 
 	@Override
 	public void populate() {
 		Log.d(TAG, "populate: " + query);
 		clear();
+		search();
+	}
 
-		AddressSearcher searcher = new AddressSearcher();
-		searchResults = searcher.search(query, searchBounds);
+	private void search() {
+		PlaceSearcher searcher = new PlaceSearcher();
+		searcher.search(query);
+	}
 
-		for (OverlayItem item : searchResults) {
-	        Log.d(TAG, item.toString());
-        }
+	private void onSearchResultsUpdated() {
+		show();
 	}
 
 	@Override
@@ -103,7 +106,6 @@ public class SearchResultsOverlay extends MapOverlay {
 	@Override
 	protected void show() {
 		Log.d(TAG, "show");
-		populate();
 		for (SearchResultOverlayItem item : searchResults) {
 			Log.d(TAG, "Adding marker to " + item.toString());
 			item.addMarker(getMap());
@@ -123,7 +125,6 @@ public class SearchResultsOverlay extends MapOverlay {
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putBoolean(PREFS_KEY_SHOW_ON_LOAD, showOnLoad);
 		editor.putString(PREFS_KEY_QUERY, query);
-		editor.putString(PREFS_KEY_BOUNDS, getBoundsStr());
 		editor.commit();
 	}
 
@@ -131,15 +132,14 @@ public class SearchResultsOverlay extends MapOverlay {
 	public void load(SharedPreferences settings) {
 		boolean showOnLoad = settings.getBoolean(PREFS_KEY_SHOW_ON_LOAD, false);
 		String query = settings.getString(PREFS_KEY_QUERY, "");
-		String boundStr = settings.getString(PREFS_KEY_BOUNDS, "");
 
-		this.searchBounds = LatLngMarshaller.unmarshallBounds(boundStr);
 		setQuery(query);
-		if (showOnLoad)
-			show();
-		else
-			hide();
 		setVisibility(showOnLoad); // current visibility
+		if (showOnLoad) {
+			populate();
+		} else {
+			hide();
+		}
 		this.showOnLoad = false; // reset for next load
 	}
 
@@ -157,29 +157,47 @@ public class SearchResultsOverlay extends MapOverlay {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == MENU_ITEM_ID) {
-			searchBounds = getBounds();
-			show();
+			populate();
 			return true;
 		}
 		return false;
-	}
-
-	private String getBoundsStr() {
-		return LatLngMarshaller.marshallBounds(getBounds());
 	}
 
 	private LatLngBounds getBounds() {
 		return getMap().getProjection().getVisibleRegion().latLngBounds;
 	}
 
+	private LatLng getCenter() {
+		return getMap().getCameraPosition().target;
+	}
+
+	private Location latLngToLoc(LatLng latLng) {
+		Location loc = new Location("");
+		loc.setLatitude(latLng.latitude);
+		loc.setLongitude(latLng.longitude);
+		return loc;
+	}
+
+	private float distanceBetweenLatLngs(LatLng src, LatLng dest) {
+		Location srcLoc = latLngToLoc(src);
+		Location destLoc = latLngToLoc(dest);
+		return srcLoc.distanceTo(destLoc);
+	}
+
+	private float getViewableRadiusInMeters() {
+		LatLngBounds bounds = getBounds();
+		LatLng center = getCenter();
+		return distanceBetweenLatLngs(center, bounds.northeast);
+	}
+
 	/**
 	 * Class to search for address
 	 * 
 	 */
-	public class AddressSearcher {
+	public class PlaceSearcher {
 
 		private static final String TAG =
-		        "spark.SearchResultsOverlay.AddressSearcher";
+			"spark.SearchResultsOverlay.PlaceSearcher";
 
 		/**
 		 * Searches for the top results for the `query`, and returns a list of
@@ -189,102 +207,67 @@ public class SearchResultsOverlay extends MapOverlay {
 		 *            text query like "airport"
 		 * @return list of LocationSearchResults most closely matching the query
 		 */
-		public List<SearchResultOverlayItem> search(String query, LatLngBounds bounds) {
-			List<SearchResultOverlayItem> searchResults =
-			        new ArrayList<SearchResultOverlayItem>();
-			if (!query.isEmpty() && bounds != null) {
-				List<Address> addresses = searchForAddresses(query, bounds);
-				if (addresses != null) {
-					for (Address addr : addresses) {
-						searchResults.add(new SearchResultOverlayItem(addr));
+		public void search(String query) {
+			if (!query.isEmpty()) {
+				searchInViewableRegion(query);
+			} else {
+				Log.d(TAG, "Query empty");
+			}
+		}
+
+		private void searchInViewableRegion(final String query) {
+			HttpRestClient.getPlaces(query,
+			                         getCenter().latitude,
+			                         getCenter().longitude,
+			                         (int) getViewableRadiusInMeters(),
+			                         new AsyncHttpResponseHandler(){
+				ProgressDialog pDialog;
+
+				@Override
+				public void onStart() {
+					pDialog = new ProgressDialog(getActivity());
+					pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+					pDialog.setCancelable( false );
+					pDialog.setTitle( "Searching for " + query + "..." );
+					pDialog.show();
+				}
+
+				@Override
+				public void onSuccess(String s) {
+					SaxParser parser = new SaxParser();
+					HandlerReturnObject<ArrayList<Place>> handlerObject = parser.parsePlacesXmlResponse(s);
+					if (handlerObject.isValid())
+					{
+						onSearchCompleted(handlerObject.getObject());
+					}
+					else
+					{
+						CommonHelper.showLongToast(getActivity(), "Failed to find locations.");
 					}
 				}
-			} else {
-				Log.d(TAG, "Query empty or bounds is null");
-			}
-			return searchResults;
+
+				@Override
+				public void onFailure(Throwable throwable, String s) {
+					super.onFailure(throwable, s);
+				}
+
+				@Override
+				public void onFinish() {
+					pDialog.dismiss();
+				}
+			});
 		}
 
-		/**
-		 * Searches for the top results for the `query`, and returns a list of
-		 * addresses as search results
-		 * 
-		 * @param query
-		 *            text query like "airport"
-		 * @return list of address most closely matching the query
-		 */
-		private List<Address> searchForAddresses(String query, LatLngBounds bounds) {
-			if (Geocoder.isPresent() && !query.isEmpty()) {
-				Log.d(TAG, "Searching for " + query);
-				return getAddressesInRegion(query, 15, bounds);
-
-			}
-			return null;
+		private void onSearchCompleted(ArrayList<Place> placeList) {
+			updateSearchResults(placeList);
 		}
 
-		private List<Address> getAddressesInRegion(String query,
-		                                           int maxResults,
-		                                           LatLngBounds bounds) {
-			List<Address> addresses = null;
-			Geocoder geocoder = new Geocoder(getActivity());
-			try {
-				addresses =
-				        geocoder.getFromLocationName(query,
-				                                     maxResults,
-				                                     bounds.southwest.latitude,
-				                                     bounds.southwest.longitude,
-				                                     bounds.northeast.latitude,
-				                                     bounds.northeast.longitude);
-			} catch (IOException e) {
-				e.printStackTrace();
+		private void updateSearchResults(ArrayList<Place> placeList) {
+			Log.d(TAG, "Updating search results. Size of placeList=" + placeList.size());
+			for (Place place : placeList) {
+				searchResults.add(new SearchResultOverlayItem(place));
 			}
-			return addresses;
+			onSearchResultsUpdated();
 		}
 	}
-	
-	/**
-	 * Marshalls and Unmarshals LatLng and LatLngBound objects to/from Strings
-	 *
-	 */
-	public static class LatLngMarshaller {
-		private static final String BOUNDS_DELIM = "|";
-		private static final String BOUNDS_REGEX = "\\|";
-		private static final String LAT_LNG_DELIM = ",";
-		private static final String LAT_LNG_REGEX = ",";
-
-		public static String marshallBounds(LatLngBounds bounds) {
-			if (bounds == null)
-				return "";
-			return  marshallLatLng(bounds.southwest) + BOUNDS_DELIM + marshallLatLng(bounds.northeast);
-		}
-
-		public static LatLngBounds unmarshallBounds(String str) {
-			if (str.isEmpty()) {
-	            return null;
-            }
-
-			String[] vals = str.split(BOUNDS_REGEX);
-			LatLng southwest = unmarshallLatLng(vals[0]);
-			LatLng northeast = unmarshallLatLng(vals[1]);
-			return new LatLngBounds(southwest, northeast);
-		}
-
-		public static String marshallLatLng(LatLng latLng) {
-			if (latLng == null)
-				return "";
-			return latLng.latitude + LAT_LNG_DELIM + latLng.longitude;
-		}
-
-		public static LatLng unmarshallLatLng(String str) {
-			if (str.isEmpty()) {
-	            return null;
-            }
-
-			String[] vals = str.split(LAT_LNG_REGEX);
-			double lat = Double.parseDouble(vals[0]);
-			double lng = Double.parseDouble(vals[1]);
-			return new LatLng(lat, lng);
-		}
-	}
-
 }

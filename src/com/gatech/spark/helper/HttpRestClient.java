@@ -66,6 +66,17 @@ public class HttpRestClient {
         //String url = "https://maps.googleapis.com/maps/api/place/textsearch/xml?query=restaurants&sensor=true&location=33.792616,-84.397683&radius=1000&key=AIzaSyA_i2Z3XEQ74NQ71KpemvtPs6WuZwhwu4c";
     }
 
+    public static void getPlaces(String query, double latitude, double longitude, int radius, AsyncHttpResponseHandler responseHandler)
+    {
+        RequestParams params = new RequestParams();
+        String baseURL = "https://maps.googleapis.com/maps/api/place/textsearch/xml";
+        params.put( "query", query);
+        params.put( "location", latitude + "," + longitude );
+        params.put( "radius", radius + "" );
+        params.put( "sensor", "false" );
+        params.put( "key", API_KEY );
+        client.get( baseURL , params, responseHandler );
+    }
 
     public static void getPlaceReferencePhoto(String photoReference , BinaryHttpResponseHandler responseHandler)
     {
