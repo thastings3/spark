@@ -26,6 +26,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -43,6 +44,7 @@ public class WhatsHotOverlay extends MapOverlay {
 	private static final LatLng SoNo = new LatLng(33.769872, -84.384527);
 	private static final String PREFS_KEY_VISIBILITY =
 	        "WhatsHotOverlay.Visibility";
+	private static final int MENU_ITEM_ID = R.id.whats_hot;
 
 	private Collection<WhatsHotOverlayItem> hotSpotList;
 	private boolean isVisible;
@@ -58,9 +60,10 @@ public class WhatsHotOverlay extends MapOverlay {
 	@Override
 	public void updateMenuItem() {
 		if (menuItem != null) {
-			int titleId =
-			        isVisible() ? R.string.hide_whats_hot : R.string.show_whats_hot;
-			menuItem.setTitle(titleId);
+			int iconId = isVisible() ?
+			    R.drawable.ic_action_whats_hot_enabled:
+			    R.drawable.ic_action_whats_hot_disabled;
+			menuItem.setIcon(iconId);
 		}
 	}
 
@@ -204,4 +207,17 @@ public class WhatsHotOverlay extends MapOverlay {
         dialog.show();
     }
 
+	@Override
+	public void onCreateOptionsMenu(Menu menu) {
+		setMenuItem(menu.findItem(MENU_ITEM_ID));
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == MENU_ITEM_ID) {
+			toggle();
+			return true;
+		}
+		return false;
+	}
 }

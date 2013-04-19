@@ -7,6 +7,7 @@ import com.google.android.gms.maps.model.Marker;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 
 public abstract class MapOverlay {
@@ -82,6 +83,7 @@ public abstract class MapOverlay {
 	 * @param visibility
 	 */
 	public abstract void setVisibility(boolean visibility);
+
 	/**
 	 * Show overlay items on map
 	 */
@@ -116,7 +118,7 @@ public abstract class MapOverlay {
 
 	/**
 	 * Callback performed when a marker is clicked. Must check to make sure that
-	 * the marker that was clicked is of this overlay type
+	 * the marker that was clicked is of this overlay type.
 	 * 
 	 * @param marker	Marker that was clicked
 	 * @return			True if the click event was handled by this overlay, else false
@@ -124,5 +126,25 @@ public abstract class MapOverlay {
 	public boolean onMarkerClick(Marker marker) {
 		return false;
 	}
+	
+	/**
+	 * Call back performed when the options menu is created. Use to set the
+	 * overlay's menu item.
+	 * 
+	 * @param menu
+	 */
+	public abstract void onCreateOptionsMenu(Menu menu);
 
+	/**
+	 * Callback performed when a menu item is clicked. Must check to make sure
+	 * that the marker that was clicked is of this overlay type.
+	 * 
+	 * @param marker
+	 *            Marker that was clicked
+	 * @return True if the click event was handled by this overlay, else false
+	 * 
+	 */
+	public boolean onOptionsItemSelected(MenuItem item) {
+		return false;
+	}
 }

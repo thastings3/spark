@@ -9,7 +9,10 @@ import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
+import com.gatech.spark.R;
 import com.gatech.spark.fragment.SparkMapFragment;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
@@ -24,10 +27,11 @@ public class SearchResultsOverlay extends MapOverlay {
 			"SearchResultsOverlay.Query";
 	private static final String PREFS_KEY_BOUNDS =
 			"SearchResultsOverlay.Bounds";
+	private static final int MENU_ITEM_ID = R.id.search_again;
 
 	private Collection<SearchResultOverlayItem> searchResults;
 	private String query;
-	private LatLngBounds storedBounds;
+	private LatLngBounds searchBounds;
 	private boolean isVisible;	// currently visible
 	private boolean showOnLoad;	// do the search the next time we load
 
@@ -45,6 +49,7 @@ public class SearchResultsOverlay extends MapOverlay {
 		// we wake up.
 		setQuery(query);
 		showOnLoad = true;
+		updateMenuItem();
 	}
 
 	public void setQuery(String query) {
@@ -65,7 +70,12 @@ public class SearchResultsOverlay extends MapOverlay {
 
 	@Override
 	public void updateMenuItem() {
-		// TODO Auto-generated method stub
+		if (query.isEmpty()) {
+	        menuItem.setVisible(false);
+        } else {
+        	menuItem.setTitle(query);
+        	menuItem.setVisible(true);
+        }
 	}
 
 	@Override
@@ -74,7 +84,7 @@ public class SearchResultsOverlay extends MapOverlay {
 		clear();
 
 		AddressSearcher searcher = new AddressSearcher();
-		searchResults = searcher.search(query, storedBounds);
+		searchResults = searcher.search(query, searchBounds);
 
 		for (OverlayItem item : searchResults) {
 	        Log.d(TAG, item.toString());
@@ -122,15 +132,14 @@ public class SearchResultsOverlay extends MapOverlay {
 		boolean showOnLoad = settings.getBoolean(PREFS_KEY_SHOW_ON_LOAD, false);
 		String query = settings.getString(PREFS_KEY_QUERY, "");
 		String boundStr = settings.getString(PREFS_KEY_BOUNDS, "");
-		this.storedBounds = LatLngMarshaller.unmarshallBounds(boundStr);
 
+		this.searchBounds = LatLngMarshaller.unmarshallBounds(boundStr);
 		setQuery(query);
-		setVisibility(showOnLoad);
-		
 		if (showOnLoad)
 			show();
 		else
 			hide();
+		setVisibility(showOnLoad); // current visibility
 		this.showOnLoad = false; // reset for next load
 	}
 
@@ -139,12 +148,29 @@ public class SearchResultsOverlay extends MapOverlay {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
-	private String getBoundsStr() {
-		LatLngBounds bounds = getMap().getProjection().getVisibleRegion().latLngBounds;
-		return LatLngMarshaller.marshallBounds(bounds);
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu) {
+		setMenuItem(menu.findItem(MENU_ITEM_ID));
 	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == MENU_ITEM_ID) {
+			searchBounds = getBounds();
+			show();
+			return true;
+		}
+		return false;
+	}
+
+	private String getBoundsStr() {
+		return LatLngMarshaller.marshallBounds(getBounds());
+	}
+
+	private LatLngBounds getBounds() {
+		return getMap().getProjection().getVisibleRegion().latLngBounds;
+	}
 
 	/**
 	 * Class to search for address

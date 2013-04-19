@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import android.content.SharedPreferences;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.gatech.spark.R;
 import com.gatech.spark.fragment.SparkMapFragment;
@@ -17,6 +19,7 @@ public class SubscriptionsOverlay extends MapOverlay {
 	private static final LatLng LenoxMall = new LatLng(33.847109, -84.364207);
 	private static final String PREFS_KEY_VISIBILITY =
 	        "SubscriptionsOverlay.Visibility";
+	private static final int MENU_ITEM_ID = R.id.subscriptions;
 
 	private Collection<SubscriptionsOverlayItem> subscriptionsList;
 	private boolean isVisible;
@@ -29,9 +32,10 @@ public class SubscriptionsOverlay extends MapOverlay {
 	@Override
 	public void updateMenuItem() {
 		if (menuItem != null) {
-			int titleId =
-			        isVisible() ? R.string.hide_subscriptions: R.string.show_subscriptions;
-			menuItem.setTitle(titleId);
+			int iconId = isVisible() ?
+			    R.drawable.ic_action_favorites_enabled :
+			    R.drawable.ic_action_favorites_disabled;
+			menuItem.setIcon(iconId);
 		}
 	}
 
@@ -108,6 +112,20 @@ public class SubscriptionsOverlay extends MapOverlay {
 	@Override
 	public boolean onMarkerClick(Marker marker) {
 		// TODO
+		return false;
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu) {
+		setMenuItem(menu.findItem(MENU_ITEM_ID));
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == MENU_ITEM_ID) {
+			toggle();
+			return true;
+		}
 		return false;
 	}
 }
