@@ -14,7 +14,7 @@ import com.gatech.spark.R;
  */
 public class LotExpandedActivity extends Activity {
 
-
+    public static final String SUBSCRIPTION = "subscription";
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -7,19 +7,28 @@ import android.database.sqlite.SQLiteDatabase;
  * User: tyler
  * To change this template use File | Settings | File Templates.
  */
-public class SubscriptionTable {
+public class SubscriptionTable
+{
     //TODO  time location name, id
     //FK to table_preferred lot location, id
 
-    public static final String TB_SUBSCRIPTION = "tb_subscription";
-    public static final String SUBSCRIPTION_LOT = "lot";
-    public static final String SUBSCRIPTION_LOCATION = "location";
+    public static final String TB_SUBSCRIPTION         = "tb_subscription";
+    public static final String PK_SUBSCRIPTION         = "subscription";
+    public static final String SUBSCRIPTION_NAME       = "name";
+    public static final String SUBSCRIPTION_LATITUDE   = "latitude";
+    public static final String SUBSCRIPTION_LONGITUDE  = "longitude";
+    public static final String SUBSCRIPTION_CREATED    = "created";
+
     /* @formatter:off */
     private static final String create_tb_subscription = "CREATE TABLE "
             + TB_SUBSCRIPTION
                 + " ( "
-                    + SUBSCRIPTION_LOT       + " VARCHAR(128) NOT NULL , "
-                    + SUBSCRIPTION_LOCATION  + " VARCHAR(128) NOT NULL "
+                    + PK_SUBSCRIPTION        + " INTEGER NOT NULL , "
+                    + SUBSCRIPTION_NAME      + " VARCHAR(128) NOT NULL , "
+                    + SUBSCRIPTION_LATITUDE  + " REAL NOT NULL , "
+                    + SUBSCRIPTION_LONGITUDE + " REAL NOT NULL ,"
+                    + SUBSCRIPTION_CREATED   + " DATETIME NOT NULL DEFAULT ( DATETIME('now', 'localtime') ) , "
+                    +   "PRIMARY KEY ( " + PK_SUBSCRIPTION + " )"
                 + " ) ";
 
     /* @formatter:on */
