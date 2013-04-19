@@ -183,6 +183,7 @@ public class SparkMapFragment extends Fragment {
 		Log.d(TAG, "Creating options menu");
 		inflater.inflate(R.menu.fragment_map, menu);
 		whatsHotOverlay.setMenuItem(menu.findItem(R.id.whats_hot));
+		subscriptionsOverlay.setMenuItem(menu.findItem(R.id.subscriptions));
 	}
 
 	@Override
@@ -190,6 +191,9 @@ public class SparkMapFragment extends Fragment {
 		switch (item.getItemId()) {
 			case R.id.whats_hot:
 				whatsHotOverlay.toggle();
+				return true;
+			case R.id.subscriptions:
+				subscriptionsOverlay.toggle();
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);

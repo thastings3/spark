@@ -5,6 +5,8 @@
     <string name="menu_settings">Settings</string>
     <string name="show_whats_hot">Show What\'s Hot</string>
     <string name="hide_whats_hot">Hide What\'s Hot</string>
+    <string name="show_subscriptions">Show Subscriptions</string>
+    <string name="hide_subscriptions">Hide Subscriptions</string>
     <string name="search_title">Search</string>
     <string name="search_hint">Search Locations</string>
 

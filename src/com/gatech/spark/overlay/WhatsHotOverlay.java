@@ -26,6 +26,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -76,7 +77,7 @@ public class WhatsHotOverlay extends MapOverlay {
 
 	@Override
 	public void clear() {
-		for (WhatsHotOverlayItem item : hotSpotList) {
+		for (OverlayItem item : hotSpotList) {
 			item.removeMarker();
 			item.hide();
 		}
@@ -84,9 +85,25 @@ public class WhatsHotOverlay extends MapOverlay {
 	}
 
 	@Override
+    public boolean isVisible() {
+	    return isVisible;
+    }
+
+	@Override
+    public void setVisibility(boolean visibility) {
+		this.isVisible = visibility;
+		if (visibility) {
+			show();
+		} else {
+			hide();
+		}
+		updateMenuItem();
+    }
+
+	@Override
 	protected void show() {
 		populate();
-		for (WhatsHotOverlayItem item : hotSpotList) {
+		for (OverlayItem item : hotSpotList) {
 			item.addMarker(map);
 			item.show();
 		}
@@ -94,7 +111,7 @@ public class WhatsHotOverlay extends MapOverlay {
 
 	@Override
 	protected void hide() {
-		for (WhatsHotOverlayItem item : hotSpotList) {
+		for (OverlayItem item : hotSpotList) {
 			item.hide();
 		}
 	}
@@ -116,7 +133,7 @@ public class WhatsHotOverlay extends MapOverlay {
 	public boolean isMember(Marker marker) {
 		return WhatsHotOverlayItem.isMember(marker);
 	}
-	
+
 	@Override
 	public boolean onMarkerClick(Marker marker) {
 		 if(isMember(marker))
@@ -187,19 +204,4 @@ public class WhatsHotOverlay extends MapOverlay {
         dialog.show();
     }
 
-	@Override
-    public boolean isVisible() {
-	    return isVisible;
-    }
-
-	@Override
-    public void setVisibility(boolean visibility) {
-		this.isVisible = visibility;
-		if (visibility) {
-			show();
-		} else {
-			hide();
-		}
-		updateMenuItem();
-    }
 }
