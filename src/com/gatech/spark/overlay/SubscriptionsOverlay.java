@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,15 +12,15 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.gatech.spark.R;
+import com.gatech.spark.database.SqliteHelper;
 import com.gatech.spark.fragment.SparkMapFragment;
-import com.gatech.spark.model.Place;
-import com.google.android.gms.maps.model.LatLng;
+import com.gatech.spark.helper.HandlerReturnObject;
+import com.gatech.spark.model.Subscription;
 import com.google.android.gms.maps.model.Marker;
 
 public class SubscriptionsOverlay extends MapOverlay {
 
-	private static final LatLng TurnerField = new LatLng(33.734797, -84.389291);
-	private static final LatLng LenoxMall = new LatLng(33.847109, -84.364207);
+	private static final String TAG = "spark.SubscriptionsOverlay";
 	private static final String PREFS_KEY_VISIBILITY =
 		"SubscriptionsOverlay.Visibility";
 	private static final int MENU_ITEM_ID = R.id.subscriptions;
@@ -46,11 +47,12 @@ public class SubscriptionsOverlay extends MapOverlay {
 	public void populate() {
 		clear();
 
-		// TODO: get this from the server
-		LatLng[] locList = { TurnerField, LenoxMall };
-		for (LatLng loc : locList) {
-			subscriptionsList.add(new SubscriptionsOverlayItem(loc));
-		}
+		SqliteHelper dbHelper = SqliteHelper.getDbHelper(getActivity().getApplicationContext());
+		HandlerReturnObject<ArrayList<Subscription>> handler = dbHelper.getSubscriptions();
+		for (Subscription sub : handler.getObject()) {
+			Log.d(TAG, "populating subscription " + sub.getName());
+			subscriptionsList.add(new SubscriptionsOverlayItem(sub));
+        }
 	}
 
 	@Override
