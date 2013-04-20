@@ -131,7 +131,7 @@ public class PlaceExpandedActivity extends Activity {
 		int iconID;
 		iconID = isSubscription ? 
 			R.drawable.ic_action_favorites_enabled :
-			R.drawable.ic_action_favorites_disabled;
+			R.drawable.ic_action_favorites_add;
 		subscribeBtn.setIcon(iconID);
 	}
 
@@ -143,15 +143,16 @@ public class PlaceExpandedActivity extends Activity {
 		Subscription sub = new Subscription(place);
 		dbHelper.insertSubscription(sub);
 		isSubscription = true;
-		subscribeBtn.setIcon(R.drawable.ic_action_favorites_enabled);
+		updateSubscribeBtn();
 	}
 
 	private void unsubscribe() {
 		dbHelper.deleteSubscriptionFromPlaceRef(place.getReference());
 		isSubscription = false;
-		subscribeBtn.setIcon(R.drawable.ic_action_favorites_disabled);
+		updateSubscribeBtn();
 	}
-    private void populateUI()
+
+	private void populateUI()
     {
     	isSubscription = isSubscription();
     	updateSubscribeBtn();
