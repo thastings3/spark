@@ -224,7 +224,7 @@ public class SearchResultsOverlay extends MapOverlay {
 			return false;
 		SearchResultOverlayItem item = (SearchResultOverlayItem) getOverlayItem(marker);
 		Intent intent = new Intent(getActivity(), PlaceExpandedActivity.class);
-		intent.putExtra(PlaceExpandedActivity.PLACE, item.getPlace());
+		intent.putExtra(PlaceExpandedActivity.PLACE, item.getPlace().getReference());
 		getActivity().startActivity(intent);
 		return true;
 	}

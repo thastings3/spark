@@ -210,7 +210,8 @@ public class WhatsHotOverlay extends MapOverlay {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 				Intent intent = new Intent( activity, PlaceExpandedActivity.class );
-				intent.putExtra( PlaceExpandedActivity.PLACE,  ((Place)adapterView.getItemAtPosition(i)) );
+				Place place = (Place)adapterView.getItemAtPosition(i);
+				intent.putExtra( PlaceExpandedActivity.PLACE,  place.getReference() );
 				activity.startActivity( intent );
 			}
 		});

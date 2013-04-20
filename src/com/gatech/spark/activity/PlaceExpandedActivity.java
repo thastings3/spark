@@ -3,6 +3,7 @@ package com.gatech.spark.activity;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.hardware.Camera.PreviewCallback;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,15 +38,15 @@ public class PlaceExpandedActivity extends Activity {
         findViewsById();
 
         Intent previousIntent = getIntent();
-        place = previousIntent.getParcelableExtra( PLACE );
-        if(place == null)
+        String placeRef = previousIntent.getStringExtra(PLACE);
+        if(placeRef == null)
         {
             CommonHelper.showLongToast(PlaceExpandedActivity.this, "Error obtaining Google Place.");
         }
         else
         {
             //populate the ui
-            HttpRestClient.getDetailedPlace(place.getReference(), new AsyncHttpResponseHandler(){
+            HttpRestClient.getDetailedPlace(placeRef, new AsyncHttpResponseHandler(){
                 @Override
                 public void onStart() {
                     pDialog = new ProgressDialog(PlaceExpandedActivity.this );
