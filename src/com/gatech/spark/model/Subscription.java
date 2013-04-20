@@ -16,6 +16,7 @@ public class Subscription implements Parcelable
     private String name;
     private double latitude;
     private double longitude;
+    private String placeReference;
 
     public Subscription()
     {
@@ -23,13 +24,15 @@ public class Subscription implements Parcelable
         name = "";
         latitude = 0;
         longitude = 0;
+        placeReference = "";
     }
 
-    public Subscription(String name, double lat, double lon)
+    public Subscription(String name, double lat, double lon, String placeReference)
     {
         this.name = name;
         latitude = lat;
         longitude = lon;
+        this.placeReference = placeReference;
     }
 
     private Subscription(Parcel in )
@@ -39,6 +42,7 @@ public class Subscription implements Parcelable
         this.name = in.readString();
         this.latitude = in.readDouble();
         this.longitude = in.readDouble();
+        this.placeReference = in.readString();
     }
 
     public int getPk() {
@@ -73,6 +77,14 @@ public class Subscription implements Parcelable
         this.longitude = longitude;
     }
 
+    public String getPlaceReference() {
+    	return placeReference;
+    }
+
+    public void setPlaceReference(String placeReference) {
+    	this.placeReference = placeReference;
+    }
+
     public int describeContents()
     {
         return 0;
@@ -83,6 +95,7 @@ public class Subscription implements Parcelable
         dest.writeString(name);
         dest.writeDouble(latitude);
         dest.writeDouble(longitude);
+        dest.writeString(placeReference);
     }
 
     public static final Parcelable.Creator<Subscription> CREATOR = new Parcelable.Creator<Subscription>() {

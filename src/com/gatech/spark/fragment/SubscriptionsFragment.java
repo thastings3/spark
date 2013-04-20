@@ -35,19 +35,7 @@ public class SubscriptionsFragment extends Fragment {
         //((TextView) rootView.findViewById(android.R.id.text1)).setText( "Section" + "test");
         dbHelper = SqliteHelper.getDbHelper( getActivity().getApplicationContext() );
 
-        //TODO REMOVE TEST CODE
-        if(dbHelper.getSubscriptions().getObject().size() == 0)
-        {
-            //FIXME insert in fake data here
-            dbHelper.insertSubscription(new Subscription("Turner Field"    , 33.73928,-84.389379));
-            dbHelper.insertSubscription(new Subscription("Atlantic Station", 33.792723,-84.396524));
-            dbHelper.insertSubscription(new Subscription("Georgia Tech"    , 33.775905,-84.394679));
-
-        }
-
-
         list = (ListView)rootView.findViewById(R.id.listView);
-
         list.setAdapter(new SubscriptionsListViewAdapter(getActivity(), dbHelper.getSubscriptions().getObject() ));
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

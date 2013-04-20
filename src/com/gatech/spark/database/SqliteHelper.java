@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class SqliteHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME    = "spark";
-    private static final int    DATABASE_VERSION = 2;
+    private static final int    DATABASE_VERSION = 3;
     private static SqliteHelper dbHelper;
 
 
@@ -50,6 +50,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
     public void onUpgrade( SQLiteDatabase db, int oldVersion, int newVersion )
     {
         //TODO alter tables here if needed.
+    	SubscriptionTable.onUpgrade(db, oldVersion, newVersion);
     }
 
     private void closeCursor( Cursor cursor )
@@ -126,6 +127,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
         cv.put( SubscriptionTable.SUBSCRIPTION_NAME, subscription.getName() );
         cv.put( SubscriptionTable.SUBSCRIPTION_LATITUDE, subscription.getLatitude() );
         cv.put( SubscriptionTable.SUBSCRIPTION_LONGITUDE, subscription.getLongitude() );
+        cv.put( SubscriptionTable.SUBSCRIPTION_PLACE_REF, subscription.getPlaceReference() );
         try
         {
             pk = db.insert( SubscriptionTable.TB_SUBSCRIPTION, null, cv );
@@ -185,6 +187,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
                 subscription.setName( getStringByColumnName( cursor, SubscriptionTable.SUBSCRIPTION_NAME ) );
                 subscription.setLatitude( getDoubleByColumnName( cursor, SubscriptionTable.SUBSCRIPTION_LATITUDE ) );
                 subscription.setLongitude( getDoubleByColumnName( cursor, SubscriptionTable.SUBSCRIPTION_LONGITUDE ) );
+                subscription.setPlaceReference( getStringByColumnName( cursor, SubscriptionTable.SUBSCRIPTION_PLACE_REF ) );
                 subscriptions.add( subscription );
                 /* @formatter:on */
 
