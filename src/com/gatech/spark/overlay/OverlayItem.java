@@ -21,7 +21,7 @@ public abstract class OverlayItem {
 	private Marker marker;
 	private LatLng loc;
 
-	public OverlayItem() {		
+	public OverlayItem() {
 	}
 
 	public OverlayItem(LatLng loc) {
@@ -47,17 +47,53 @@ public abstract class OverlayItem {
 			marker.remove();
 		}
 	}
-	
+
 	public void show() {
 		if (marker != null) {
 			Log.d(TAG, "Seting marker at " + marker.getPosition() + " to visible");
 			marker.setVisible(true);
 		}
 	}
-	
+
 	public void hide() {
 		if (marker != null) {
 			marker.setVisible(false);
 		}
+	}
+
+	/**
+	 * 
+	 * @return A string unique to this OverlayItem type
+	 */
+	protected abstract String getTag();
+
+	/**
+	 * 
+	 * @return An int unique to this OverlyItem instance
+	 */
+	protected abstract int getID();
+
+	protected String createSnippet() {
+		return getTag() + getID();
+	}
+
+	/**
+	 * Returns true if the marker is of this OverlayItem type
+	 * @param marker
+	 * @return
+	 */
+	public boolean isMember(Marker marker) {
+		String snippet = marker.getSnippet();
+		return (snippet != null) && snippet.startsWith(getTag());
+	}
+
+	/**
+	 * Returns true if the marker is associated with this OverlayItem instance
+	 * @param marker
+	 * @return
+	 */
+	public boolean hasMarker(Marker marker) {
+		String snippet = marker.getSnippet();
+		return isMember(marker) && snippet.endsWith(String.valueOf(getID()));
 	}
 }

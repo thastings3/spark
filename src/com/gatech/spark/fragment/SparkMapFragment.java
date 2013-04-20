@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import com.gatech.spark.R;
 import com.gatech.spark.overlay.MapOverlay;
+import com.gatech.spark.overlay.OverlayInfoWindowAdapter;
 import com.gatech.spark.overlay.SearchResultsOverlay;
 import com.gatech.spark.overlay.SubscriptionsOverlay;
 import com.gatech.spark.overlay.WhatsHotOverlay;
@@ -48,7 +49,7 @@ public class SparkMapFragment extends Fragment {
 		super.onCreateView(inflater, container, savedInstanceState);
 		Log.d(TAG, "Creating View");
 		View rootView =
-		    inflater.inflate(R.layout.fragment_spark_map, container, false);
+			inflater.inflate(R.layout.fragment_spark_map, container, false);
 
 		initMapFeatures();
 		mapView = (MapView) rootView.findViewById(R.id.sparkMapView);
@@ -109,17 +110,24 @@ public class SparkMapFragment extends Fragment {
 	public void setupClickListeners() {
 		final GoogleMap map = getMap();
 
+		// Let the overlays handle marker clicks
 		map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+
 			@Override
 			public boolean onMarkerClick(Marker marker) {
 				for (MapOverlay overlay : allOverlays) {
-					if (overlay.onMarkerClick(marker)) {
+					if (overlay.onMarkerClick(marker))
 						return true;
-					}
 				}
 				return false;
 			}
 		});
+
+		// Let the overlays handle info windows
+		OverlayInfoWindowAdapter infoWindowHandler =
+			new OverlayInfoWindowAdapter(getActivity().getLayoutInflater(), allOverlays);
+		map.setInfoWindowAdapter(infoWindowHandler);
+		map.setOnInfoWindowClickListener(infoWindowHandler);
 	}
 
 	/**
@@ -130,15 +138,15 @@ public class SparkMapFragment extends Fragment {
 		SharedPreferences settings = getSharedPreferences();
 		try {
 			float mapLat =
-			    settings.getFloat(PREFS_KEY_MAP_LOC_LAT,
-			                      (float) GT.latitude);
+				settings.getFloat(PREFS_KEY_MAP_LOC_LAT,
+				                  (float) GT.latitude);
 			float mapLng =
-			    settings.getFloat(PREFS_KEY_MAP_LOC_LNG,
-			                      (float) GT.longitude);
+				settings.getFloat(PREFS_KEY_MAP_LOC_LNG,
+				                  (float) GT.longitude);
 			float mapZoom = settings.getFloat(PREFS_KEY_MAP_ZOOM, 13);
 			getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mapLat,
 			                                                                 mapLng),
-			                                                      mapZoom));
+			                                                                 mapZoom));
 
 			for (MapOverlay overlay : allOverlays) {
 				overlay.load(settings);
@@ -194,9 +202,8 @@ public class SparkMapFragment extends Fragment {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		for (MapOverlay overlay : allOverlays) {
-			if (overlay.onOptionsItemSelected(item)) {
+			if (overlay.onOptionsItemSelected(item))
 				return true;
-			}
 		}
 		return super.onOptionsItemSelected(item);
 	}

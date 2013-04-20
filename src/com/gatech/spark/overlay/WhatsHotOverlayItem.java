@@ -3,11 +3,17 @@ package com.gatech.spark.overlay;
 import com.gatech.spark.R;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class WhatsHotOverlayItem extends OverlayItem {
 	private static final String WHATS_HOT_SNIPPET = "whats_hot_marker";
+	private static int ID = 0;
+	private int myID;
+
+	public WhatsHotOverlayItem() {
+		super();
+		myID = ID++;
+	}
 
 	public WhatsHotOverlayItem(LatLng loc) {
 		super(loc);
@@ -16,14 +22,19 @@ public class WhatsHotOverlayItem extends OverlayItem {
 	@Override
 	protected MarkerOptions getMarkerOptions() {
 		return new MarkerOptions().title("this is hot hot hot!")
-		                          .snippet(WHATS_HOT_SNIPPET)
-		                          .draggable(false)
-		                          .anchor(0.5f, 0.5f)
-		                          .icon(BitmapDescriptorFactory.fromResource(R.drawable.whats_hot));
+			.snippet(createSnippet())
+			.draggable(false)
+			.anchor(0.5f, 0.5f)
+			.icon(BitmapDescriptorFactory.fromResource(R.drawable.whats_hot));
 	}
 
-	public static boolean isMember(Marker marker) {
-		String snippet = marker.getSnippet();
-		return (snippet != null) && snippet.equalsIgnoreCase(WHATS_HOT_SNIPPET);
+	@Override
+	protected int getID() {
+		return myID;
+	}
+
+	@Override
+	protected String getTag() {
+		return WHATS_HOT_SNIPPET;
 	}
 }

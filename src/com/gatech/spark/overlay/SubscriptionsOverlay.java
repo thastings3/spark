@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import android.content.SharedPreferences;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.gatech.spark.R;
 import com.gatech.spark.fragment.SparkMapFragment;
@@ -18,12 +20,12 @@ public class SubscriptionsOverlay extends MapOverlay {
 	private static final LatLng TurnerField = new LatLng(33.734797, -84.389291);
 	private static final LatLng LenoxMall = new LatLng(33.847109, -84.364207);
 	private static final String PREFS_KEY_VISIBILITY =
-	        "SubscriptionsOverlay.Visibility";
+		"SubscriptionsOverlay.Visibility";
 	private static final int MENU_ITEM_ID = R.id.subscriptions;
 
 	private Collection<SubscriptionsOverlayItem> subscriptionsList;
 	private boolean isVisible;
-	
+
 	public SubscriptionsOverlay(SparkMapFragment fragment, GoogleMap map) {
 		super(fragment, map);
 		subscriptionsList = new ArrayList<SubscriptionsOverlayItem>();
@@ -33,8 +35,8 @@ public class SubscriptionsOverlay extends MapOverlay {
 	public void updateMenuItem() {
 		if (menuItem != null) {
 			int iconId = isVisible() ?
-			    R.drawable.ic_action_favorites_enabled :
-			    R.drawable.ic_action_favorites_disabled;
+				R.drawable.ic_action_favorites_enabled :
+					R.drawable.ic_action_favorites_disabled;
 			menuItem.setIcon(iconId);
 		}
 	}
@@ -106,7 +108,18 @@ public class SubscriptionsOverlay extends MapOverlay {
 
 	@Override
 	public boolean isMember(Marker marker) {
-		return WhatsHotOverlayItem.isMember(marker);
+		return new SubscriptionsOverlayItem().isMember(marker);
+	}
+
+	@Override
+	public OverlayItem getOverlayItem(Marker marker) {
+		if (isMember(marker)) {
+			for (OverlayItem item : subscriptionsList) {
+				if (item.hasMarker(marker))
+					return item;
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -127,5 +140,23 @@ public class SubscriptionsOverlay extends MapOverlay {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public View getInfoContents(LayoutInflater inflater, Marker marker) {
+		if (!isMember(marker))
+			return null;
+
+		return null;
+		/*
+		View popup = inflater.inflate(R.layout.infoWindow, null);
+		TextView tv = (TextView)popup.findViewById(R.id.title);
+
+		tv.setText(marker.getTitle());
+		tv=(TextView)popup.findViewById(R.id.snippet);
+		tv.setText(marker.getSnippet());
+
+		return(popup);
+		 */
 	}
 }

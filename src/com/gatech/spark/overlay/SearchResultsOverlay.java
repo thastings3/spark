@@ -145,8 +145,18 @@ public class SearchResultsOverlay extends MapOverlay {
 
 	@Override
 	public boolean isMember(Marker marker) {
-		// TODO Auto-generated method stub
-		return false;
+		return new SearchResultOverlayItem().isMember(marker);
+	}
+
+	@Override
+	public OverlayItem getOverlayItem(Marker marker) {
+		if (isMember(marker)) {
+			for (OverlayItem item : searchResults) {
+				if (item.hasMarker(marker))
+					return item;
+			}
+		}
+		return null;
 	}
 
 	@Override
