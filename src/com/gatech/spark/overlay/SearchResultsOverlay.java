@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.gatech.spark.R;
+import com.gatech.spark.activity.PlaceExpandedActivity;
 import com.gatech.spark.fragment.SparkMapFragment;
 import com.gatech.spark.helper.CommonHelper;
 import com.gatech.spark.helper.HandlerReturnObject;
@@ -214,6 +216,17 @@ public class SearchResultsOverlay extends MapOverlay {
 		tv.setText(place.getFormattedAddress());
 
 		return(popup);
+	}
+
+	@Override
+	public boolean onInfoWindowClick(Marker marker) {
+		if (!isMember(marker))
+			return false;
+		SearchResultOverlayItem item = (SearchResultOverlayItem) getOverlayItem(marker);
+		Intent intent = new Intent(getActivity(), PlaceExpandedActivity.class);
+		intent.putExtra(PlaceExpandedActivity.PLACE, item.getPlace());
+		getActivity().startActivity(intent);
+		return true;
 	}
 
 	/**
