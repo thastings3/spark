@@ -28,7 +28,7 @@ public class SubscriptionTable
                     + SUBSCRIPTION_NAME      + " VARCHAR(128) NOT NULL , "
                     + SUBSCRIPTION_LATITUDE  + " REAL NOT NULL , "
                     + SUBSCRIPTION_LONGITUDE + " REAL NOT NULL ,"
-                    + SUBSCRIPTION_PLACE_REF + " VARCHAR(128) NOT NULL ,"
+                    + SUBSCRIPTION_PLACE_REF + " VARCHAR(256) NOT NULL ,"
                     + SUBSCRIPTION_CREATED   + " DATETIME NOT NULL DEFAULT ( DATETIME('now', 'localtime') ) , "
                     +   "PRIMARY KEY ( " + PK_SUBSCRIPTION + " )"
                 + " ) ";

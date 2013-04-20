@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class SqliteHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME    = "spark";
-    private static final int    DATABASE_VERSION = 3;
+    private static final int    DATABASE_VERSION = 4;
     private static SqliteHelper dbHelper;
 
 
@@ -123,7 +123,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         long pk = -1;
 
-        ContentValues cv = new ContentValues( 3 );
+        ContentValues cv = new ContentValues( 4 );
         cv.put( SubscriptionTable.SUBSCRIPTION_NAME, subscription.getName() );
         cv.put( SubscriptionTable.SUBSCRIPTION_LATITUDE, subscription.getLatitude() );
         cv.put( SubscriptionTable.SUBSCRIPTION_LONGITUDE, subscription.getLongitude() );
