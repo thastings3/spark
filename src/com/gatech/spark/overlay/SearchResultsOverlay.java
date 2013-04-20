@@ -17,7 +17,6 @@ import com.gatech.spark.helper.HandlerReturnObject;
 import com.gatech.spark.helper.HttpRestClient;
 import com.gatech.spark.helper.SaxParser;
 import com.gatech.spark.model.Place;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -36,8 +35,8 @@ public class SearchResultsOverlay extends MapOverlay {
 	private boolean isVisible;	// currently visible
 	private boolean showOnLoad;	// do the search the next time we load
 
-	public SearchResultsOverlay(SparkMapFragment fragment, GoogleMap map) {
-		super(fragment, map);
+	public SearchResultsOverlay(SparkMapFragment fragment) {
+		super(fragment);
 		searchResults = new ArrayList<SearchResultOverlayItem>();
 		query = "";
 		isVisible = false;
@@ -107,7 +106,6 @@ public class SearchResultsOverlay extends MapOverlay {
 	protected void show() {
 		Log.d(TAG, "show");
 		for (SearchResultOverlayItem item : searchResults) {
-			Log.d(TAG, "Adding marker to " + item.toString());
 			item.addMarker(getMap());
 			item.show();
 		}

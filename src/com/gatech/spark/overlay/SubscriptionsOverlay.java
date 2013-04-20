@@ -11,7 +11,6 @@ import android.view.View;
 
 import com.gatech.spark.R;
 import com.gatech.spark.fragment.SparkMapFragment;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
@@ -26,8 +25,8 @@ public class SubscriptionsOverlay extends MapOverlay {
 	private Collection<SubscriptionsOverlayItem> subscriptionsList;
 	private boolean isVisible;
 
-	public SubscriptionsOverlay(SparkMapFragment fragment, GoogleMap map) {
-		super(fragment, map);
+	public SubscriptionsOverlay(SparkMapFragment fragment) {
+		super(fragment);
 		subscriptionsList = new ArrayList<SubscriptionsOverlayItem>();
 	}
 
@@ -81,7 +80,7 @@ public class SubscriptionsOverlay extends MapOverlay {
 	protected void show() {
 		populate();
 		for (OverlayItem item : subscriptionsList) {
-			item.addMarker(map);
+			item.addMarker(getMap());
 			item.show();
 		}
 	}

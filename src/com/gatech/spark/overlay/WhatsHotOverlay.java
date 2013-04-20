@@ -27,7 +27,6 @@ import com.gatech.spark.helper.HandlerReturnObject;
 import com.gatech.spark.helper.HttpRestClient;
 import com.gatech.spark.helper.SaxParser;
 import com.gatech.spark.model.Place;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -49,8 +48,8 @@ public class WhatsHotOverlay extends MapOverlay {
 	private Collection<WhatsHotOverlayItem> hotSpotList;
 	private boolean isVisible;
 
-	public WhatsHotOverlay(SparkMapFragment fragment, GoogleMap map) {
-		super(fragment, map);
+	public WhatsHotOverlay(SparkMapFragment fragment) {
+		super(fragment);
 		hotSpotList = new ArrayList<WhatsHotOverlayItem>();
 	}
 
@@ -107,7 +106,7 @@ public class WhatsHotOverlay extends MapOverlay {
 	protected void show() {
 		populate();
 		for (OverlayItem item : hotSpotList) {
-			item.addMarker(map);
+			item.addMarker(getMap());
 			item.show();
 		}
 	}

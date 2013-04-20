@@ -15,12 +15,10 @@ public abstract class MapOverlay {
 
 	private static final String TAG = "spark.MapOverlay";
 	private SparkMapFragment fragment;
-	protected GoogleMap map;
 	protected MenuItem menuItem;
 
-	public MapOverlay(SparkMapFragment fragment, GoogleMap map) {
+	public MapOverlay(SparkMapFragment fragment) {
 		this.fragment = fragment;
-		this.map = map;
 		this.menuItem = null;
 	}
 

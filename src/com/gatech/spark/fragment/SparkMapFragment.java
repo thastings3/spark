@@ -99,11 +99,11 @@ public class SparkMapFragment extends Fragment {
 
 	private void initOverlays() {
 		allOverlays = new ArrayList<MapOverlay>();
-		whatsHotOverlay = new WhatsHotOverlay(this, getMap());
+		whatsHotOverlay = new WhatsHotOverlay(this);
 		allOverlays.add(whatsHotOverlay);
-		searchResultsOverlay = new SearchResultsOverlay(this, getMap());
+		searchResultsOverlay = new SearchResultsOverlay(this);
 		allOverlays.add(searchResultsOverlay);
-		subscriptionsOverlay = new SubscriptionsOverlay(this, getMap());
+		subscriptionsOverlay = new SubscriptionsOverlay(this);
 		allOverlays.add(subscriptionsOverlay);
 	}
 
