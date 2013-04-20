@@ -1,10 +1,11 @@
 package com.gatech.spark.overlay;
 
-import java.util.List;
+import java.util.Collection;
 
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.gatech.spark.fragment.SparkMapFragment;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.model.Marker;
@@ -12,17 +13,24 @@ import com.google.android.gms.maps.model.Marker;
 public class OverlayInfoWindowAdapter implements InfoWindowAdapter,
 OnInfoWindowClickListener {
 
-	private LayoutInflater inflater;
-	private List<MapOverlay> overlays;
+	private SparkMapFragment fragment;
 
-	public OverlayInfoWindowAdapter(LayoutInflater inflater, List<MapOverlay> overlays) {
-		this.inflater = inflater;
-		this.overlays = overlays;
+	public OverlayInfoWindowAdapter(SparkMapFragment fragment) {
+		this.fragment = fragment;
+	}
+
+	private LayoutInflater getInflater() {
+		return fragment.getActivity().getLayoutInflater();
+	}
+
+	private Collection<MapOverlay> getOverlays() {
+		return fragment.getOverlays();
 	}
 
 	@Override
 	public View getInfoContents(Marker marker) {
-		for (MapOverlay overlay : overlays) {
+		LayoutInflater inflater = getInflater();
+		for (MapOverlay overlay : getOverlays()) {
 			View view = overlay.getInfoContents(inflater, marker);
 			if (view != null)
 				return view;
@@ -32,7 +40,8 @@ OnInfoWindowClickListener {
 
 	@Override
 	public View getInfoWindow(Marker marker) {
-		for (MapOverlay overlay : overlays) {
+		LayoutInflater inflater = getInflater();
+		for (MapOverlay overlay : getOverlays()) {
 			View view = overlay.getInfoWindow(inflater, marker);
 			if (view != null)
 				return view;
@@ -42,7 +51,7 @@ OnInfoWindowClickListener {
 
 	@Override
 	public void onInfoWindowClick(Marker marker) {
-		for (MapOverlay overlay : overlays) {
+		for (MapOverlay overlay : getOverlays()) {
 			if (overlay.onInfoWindowClick(marker))
 				return;
 		}

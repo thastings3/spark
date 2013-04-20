@@ -7,8 +7,11 @@ import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.gatech.spark.R;
 import com.gatech.spark.fragment.SparkMapFragment;
@@ -196,6 +199,21 @@ public class SearchResultsOverlay extends MapOverlay {
 		LatLngBounds bounds = getBounds();
 		LatLng center = getCenter();
 		return distanceBetweenLatLngs(center, bounds.northeast);
+	}
+
+	@Override
+	public View getInfoContents(LayoutInflater inflater, Marker marker) {
+		if (!isMember(marker))
+			return null;
+		SearchResultOverlayItem item = (SearchResultOverlayItem) getOverlayItem(marker);
+		Place place = item.getPlace();
+		View popup = inflater.inflate(R.layout.info_window_subscription, null);
+		TextView tv = (TextView)popup.findViewById(R.id.title);
+		tv.setText(place.getName());
+		tv = (TextView)popup.findViewById(R.id.snippet);
+		tv.setText(place.getFormattedAddress());
+
+		return(popup);
 	}
 
 	/**

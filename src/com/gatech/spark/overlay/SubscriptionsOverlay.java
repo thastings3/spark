@@ -8,9 +8,11 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.gatech.spark.R;
 import com.gatech.spark.fragment.SparkMapFragment;
+import com.gatech.spark.model.Place;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
@@ -145,17 +147,13 @@ public class SubscriptionsOverlay extends MapOverlay {
 	public View getInfoContents(LayoutInflater inflater, Marker marker) {
 		if (!isMember(marker))
 			return null;
-
-		return null;
-		/*
-		View popup = inflater.inflate(R.layout.infoWindow, null);
+		SubscriptionsOverlayItem item = (SubscriptionsOverlayItem) getOverlayItem(marker);
+		View popup = inflater.inflate(R.layout.info_window_subscription, null);
 		TextView tv = (TextView)popup.findViewById(R.id.title);
-
-		tv.setText(marker.getTitle());
-		tv=(TextView)popup.findViewById(R.id.snippet);
-		tv.setText(marker.getSnippet());
+		tv.setText("A Subscription at " + item.getLatLng());
+		tv = (TextView)popup.findViewById(R.id.snippet);
+		tv.setText(item.createSnippet());
 
 		return(popup);
-		 */
 	}
 }

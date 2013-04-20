@@ -1,6 +1,7 @@
 package com.gatech.spark.fragment;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -107,6 +108,10 @@ public class SparkMapFragment extends Fragment {
 		allOverlays.add(subscriptionsOverlay);
 	}
 
+	public Collection<MapOverlay> getOverlays() {
+		return allOverlays;
+	}
+
 	public void setupClickListeners() {
 		final GoogleMap map = getMap();
 
@@ -124,8 +129,7 @@ public class SparkMapFragment extends Fragment {
 		});
 
 		// Let the overlays handle info windows
-		OverlayInfoWindowAdapter infoWindowHandler =
-			new OverlayInfoWindowAdapter(getActivity().getLayoutInflater(), allOverlays);
+		OverlayInfoWindowAdapter infoWindowHandler = new OverlayInfoWindowAdapter(this);
 		map.setInfoWindowAdapter(infoWindowHandler);
 		map.setOnInfoWindowClickListener(infoWindowHandler);
 	}
@@ -230,6 +234,7 @@ public class SparkMapFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "Creating fragment");
+		initOverlays();
 		setHasOptionsMenu(true);
 	}
 
