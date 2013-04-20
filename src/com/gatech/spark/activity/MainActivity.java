@@ -133,7 +133,7 @@ public class MainActivity extends Activity
 		public void onTabUnselected(ActionBar.Tab tab,
 		                            FragmentTransaction fragmentTransaction) {
 			if (fragment != null) {
-				fragmentTransaction.hide(fragment);
+				fragmentTransaction.detach(fragment);
 			}
 		}
 
@@ -144,7 +144,7 @@ public class MainActivity extends Activity
                 fragment = Fragment.instantiate(activity, cl.getName(), null);
                 fragmentTransaction.add(android.R.id.content, fragment, tag);
             } else {
-            	fragmentTransaction.show(fragment);
+            	fragmentTransaction.attach(fragment);
             }
 		}
 

@@ -181,25 +181,56 @@ public class SqliteHelper extends SQLiteOpenHelper {
         {
             do
             {
-                /* @formatter:off */
-                Subscription subscription = new Subscription();
-                subscription.setPk( getIntegerByColumnName( cursor, SubscriptionTable.PK_SUBSCRIPTION ) );
-                subscription.setName( getStringByColumnName( cursor, SubscriptionTable.SUBSCRIPTION_NAME ) );
-                subscription.setLatitude( getDoubleByColumnName( cursor, SubscriptionTable.SUBSCRIPTION_LATITUDE ) );
-                subscription.setLongitude( getDoubleByColumnName( cursor, SubscriptionTable.SUBSCRIPTION_LONGITUDE ) );
-                subscription.setPlaceReference( getStringByColumnName( cursor, SubscriptionTable.SUBSCRIPTION_PLACE_REF ) );
+                Subscription subscription = cursorToSubscription(cursor);
                 subscriptions.add( subscription );
-                /* @formatter:on */
-
             }
             while ( cursor.moveToNext() );
         }
-        if ( !cursor.isClosed() )
-        {
-            cursor.close();
-        }
+        closeCursor(cursor);
 
         return new HandlerReturnObject<ArrayList<Subscription>>(true, "Success", subscriptions);
     }
+    
+    public HandlerReturnObject<Subscription> findSubscriptionByPlaceRef(String reference) {
+    	 SQLiteDatabase db = this.getReadableDatabase();
+         Subscription subscription = null;
+         /* @formatter:off */
+         String query = "SELECT * FROM " + SubscriptionTable.TB_SUBSCRIPTION + 
+        	 " WHERE " + SubscriptionTable.SUBSCRIPTION_PLACE_REF + " = '" + reference + "'";
+         /* @formatter:on */
+         Cursor cursor = db.rawQuery( query, new String[]{} );
 
+         if ( cursor.moveToFirst() )
+         {
+        	 subscription = cursorToSubscription(cursor);
+         }
+         closeCursor(cursor);
+
+         if (subscription != null) {
+        	 return new HandlerReturnObject<Subscription>(true, "Success", subscription);
+         } else {
+        	 return new HandlerReturnObject<Subscription>(false, "Error: Could not find subscription", new Subscription());
+         }
+    }
+    
+    private Subscription cursorToSubscription(Cursor cursor) {
+        Subscription subscription = new Subscription();
+        /* @formatter:off */
+        subscription.setPk( getIntegerByColumnName( cursor, SubscriptionTable.PK_SUBSCRIPTION ) );
+        subscription.setName( getStringByColumnName( cursor, SubscriptionTable.SUBSCRIPTION_NAME ) );
+        subscription.setLatitude( getDoubleByColumnName( cursor, SubscriptionTable.SUBSCRIPTION_LATITUDE ) );
+        subscription.setLongitude( getDoubleByColumnName( cursor, SubscriptionTable.SUBSCRIPTION_LONGITUDE ) );
+        subscription.setPlaceReference( getStringByColumnName( cursor, SubscriptionTable.SUBSCRIPTION_PLACE_REF ) );
+        /* @formatter:on */
+        return subscription;
+    }
+
+	public boolean isSubcribedToPlaceRef(String reference) {
+		return findSubscriptionByPlaceRef(reference).isValid();
+    }
+
+	public HandlerReturnObject<Subscription> deleteSubscriptionFromPlaceRef(String reference) {
+		Subscription subscription = findSubscriptionByPlaceRef(reference).getObject();
+		return deleteSubscription(subscription);
+	}
 }
