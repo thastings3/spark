@@ -26,6 +26,13 @@ public class Subscription implements Parcelable
         longitude = 0;
         placeReference = "";
     }
+    
+    public Subscription(Place place) {
+    	this(place.getName(),
+    	     place.getLocation().getLatitude(),
+    	     place.getLocation().getLongitude(),
+    	     place.getReference());
+    }
 
     public Subscription(String name, double lat, double lon, String placeReference)
     {
