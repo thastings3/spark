@@ -3,10 +3,11 @@ package com.gatech.spark.activity;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.hardware.Camera.PreviewCallback;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -30,7 +31,9 @@ public class PlaceExpandedActivity extends Activity {
     public TextView nameTextView, addressTextView, priceTextView, openTextView, vicinityTextView, ratingTextView, phoneTextView,websiteTextView;
     public SmartImageView iconImageView;
     private Button findParkingButton;
+    private boolean isSubscription = false;
     private ProgressDialog pDialog;
+	private MenuItem subscribeBtn;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +48,7 @@ public class PlaceExpandedActivity extends Activity {
         }
         else
         {
+        	isSubscription = isSubscription();
             //populate the ui
             HttpRestClient.getDetailedPlace(placeRef, new AsyncHttpResponseHandler(){
                 @Override
@@ -86,6 +90,47 @@ public class PlaceExpandedActivity extends Activity {
         }
     }
 
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.activity_place_expanded, menu);
+        subscribeBtn = menu.findItem(R.id.is_subscription);
+        return true;
+    }
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == subscribeBtn.getItemId()) {
+			toggleSubscription(item);
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
+	public void toggleSubscription(MenuItem item) {
+		if (isSubscription) {
+			unsubscribe();
+			item.setIcon(R.drawable.ic_action_favorites_enabled);
+		} else {
+			subscribe();
+			item.setIcon(R.drawable.ic_action_favorites_disabled);
+		}
+	}
+
+	private boolean isSubscription() {
+		return isSubscription; // TODO get from db.
+	}
+
+	private void subscribe() {
+		isSubscription = true;
+		subscribeBtn.setIcon(R.drawable.ic_action_favorites_enabled);
+	}
+
+	private void unsubscribe() {
+		isSubscription = false;
+		subscribeBtn.setIcon(R.drawable.ic_action_favorites_disabled);
+	}
     private void populateUI()
     {
         nameTextView.setText(place.getName());
