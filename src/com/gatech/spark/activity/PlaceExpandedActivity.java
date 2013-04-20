@@ -10,11 +10,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import com.gatech.spark.R;
+import com.gatech.spark.database.SqliteHelper;
 import com.gatech.spark.helper.CommonHelper;
 import com.gatech.spark.helper.HandlerReturnObject;
 import com.gatech.spark.helper.HttpRestClient;
 import com.gatech.spark.helper.SaxParser;
 import com.gatech.spark.model.Place;
+import com.gatech.spark.model.Subscription;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.image.SmartImageView;
 
@@ -30,11 +32,13 @@ public class PlaceExpandedActivity extends Activity {
     public SmartImageView iconImageView;
     private Button findParkingButton;
     private ProgressDialog pDialog;
+    private SqliteHelper dbHelper;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.place_expanded);
         findViewsById();
+        dbHelper = SqliteHelper.getDbHelper( getApplicationContext());
 
         Intent previousIntent = getIntent();
         place = previousIntent.getParcelableExtra( PLACE );
@@ -134,6 +138,27 @@ public class PlaceExpandedActivity extends Activity {
         websiteTextView = (TextView)findViewById(R.id.websiteTextView);
         setupCall();
         setupWebsite();
+        setupFindParkingButton();
+    }
+
+    private void setupFindParkingButton()
+    {
+        findParkingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                    HandlerReturnObject<Subscription> handlerObject = dbHelper.insertSubscription(new Subscription(place.getName(), place.getLocation().getLatitude(), place.getLocation().getLongitude()));
+                    if(handlerObject.isValid())
+                    {
+                        CommonHelper.showLongToast(PlaceExpandedActivity.this, "You are now subscribed!");
+                        PlaceExpandedActivity.this.finish();
+                    }
+                    else
+                    {
+                        CommonHelper.showLongToast(PlaceExpandedActivity.this, "Error subscribing: "  + handlerObject.getMessage());
+                    }
+            }
+        });
+
     }
 
     private void setupCall()

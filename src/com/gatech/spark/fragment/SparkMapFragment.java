@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.gatech.spark.R;
+import com.gatech.spark.database.SqliteHelper;
 import com.gatech.spark.overlay.MapOverlay;
 import com.gatech.spark.overlay.OverlayInfoWindowAdapter;
 import com.gatech.spark.overlay.SearchResultsOverlay;
@@ -43,12 +44,14 @@ public class SparkMapFragment extends Fragment {
 	private MapOverlay searchResultsOverlay;
 	private MapOverlay subscriptionsOverlay;
 	private ArrayList<MapOverlay> allOverlays;
+    private SqliteHelper dbHelper;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 		Log.d(TAG, "Creating View");
+        dbHelper = SqliteHelper.getDbHelper( getActivity().getApplicationContext() );
 		View rootView =
 			inflater.inflate(R.layout.fragment_spark_map, container, false);
 
@@ -104,7 +107,7 @@ public class SparkMapFragment extends Fragment {
 		allOverlays.add(whatsHotOverlay);
 		searchResultsOverlay = new SearchResultsOverlay(this);
 		allOverlays.add(searchResultsOverlay);
-		subscriptionsOverlay = new SubscriptionsOverlay(this);
+		subscriptionsOverlay = new SubscriptionsOverlay(this, dbHelper);
 		allOverlays.add(subscriptionsOverlay);
 	}
 

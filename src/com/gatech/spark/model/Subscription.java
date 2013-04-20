@@ -2,6 +2,7 @@ package com.gatech.spark.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import com.google.android.gms.maps.model.LatLng;
 
 /**
  * Created with IntelliJ IDEA.
@@ -76,6 +77,11 @@ public class Subscription implements Parcelable
     public int describeContents()
     {
         return 0;
+    }
+
+    public LatLng getLatLong()
+    {
+        return new LatLng(this.latitude, this.longitude);
     }
 
     public void writeToParcel( Parcel dest, int flags ) {
