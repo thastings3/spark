@@ -203,6 +203,7 @@ public class PlaceExpandedActivity extends Activity {
         websiteTextView = (TextView)findViewById(R.id.websiteTextView);
         setupCall();
         setupWebsite();
+        setupFindParkingButton();
     }
 
     private void setupCall()
@@ -237,6 +238,26 @@ public class PlaceExpandedActivity extends Activity {
             }
         });
 
+
+    }
+
+    private void setupFindParkingButton()
+    {
+        findParkingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                HandlerReturnObject<Subscription> handlerObject = dbHelper.insertSubscription(new Subscription(place.getName(), place.getLocation().getLatitude(), place.getLocation().getLongitude(), ""));
+                if(handlerObject.isValid())
+                {
+                    CommonHelper.showLongToast(PlaceExpandedActivity.this, "You are now subscribed!");
+                    PlaceExpandedActivity.this.finish();
+                }
+                else
+                {
+                    CommonHelper.showLongToast(PlaceExpandedActivity.this, "Error subscribing: "  + handlerObject.getMessage());
+                }
+            }
+        });
 
     }
 

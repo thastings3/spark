@@ -15,9 +15,6 @@ import java.net.CookieStore;
  * To change this template use File | Settings | File Templates.
  */
 public class HttpRestClient {
-
-
-
     public static final String     BASE_URL = "http://google.com/";
     public static final String     API_KEY  = "AIzaSyA_i2Z3XEQ74NQ71KpemvtPs6WuZwhwu4c";
 
@@ -111,6 +108,25 @@ public class HttpRestClient {
         client.get( baseURL , null , responseHandler );
     }
 
+    /**
+     * queries our DB and gets parking lots that we can subscribe to.
+     * @param latitude
+     * @param longitude
+     * @param radiusInMeters
+     * @param responseHandler
+     */
+    public static void getNearbyParkingLots(double latitude, double longitude, int radiusInMeters, AsyncHttpResponseHandler responseHandler)
+    {
+        String baseURL = "http://centspark6675.cloudapp.net:8080/spark/webresources/parkinglot/findLotsByLocation";
+
+        RequestParams params = new RequestParams();
+        params.put( "longitude", longitude + "" );
+        params.put( "latitude", latitude + "" );
+        params.put( "maxdistance", radiusInMeters + "" );
+        params.put( "maxresults", "5" );
+        client.get( baseURL , params , responseHandler );
+    }
+
 
     /**
      * Gets the list of locations from our DB
@@ -129,6 +145,12 @@ public class HttpRestClient {
     public static void getSparkAddresses(AsyncHttpResponseHandler responseHandler)
     {
         String baseURL = "http://centspark6675.cloudapp.net:8080/spark/webresources/address";
+        client.get( baseURL , null , responseHandler );
+    }
+
+    public static void getParkingLotGraph(int pkParkingLot, AsyncHttpResponseHandler responseHandler)
+    {
+        String baseURL = "http://centspark6675.cloudapp.net/render?target=stats.gauges.parkinglot." + pkParkingLot + "&format=json&from=-36hours";
         client.get( baseURL , null , responseHandler );
     }
 

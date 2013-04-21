@@ -3,6 +3,9 @@ package com.gatech.spark.helper;
 import com.gatech.spark.handler.PlaceDetailsXmlHandler;
 import com.gatech.spark.handler.PlacesXmlHandler;
 import com.gatech.spark.model.Place;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -11,6 +14,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.StringReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -86,6 +90,30 @@ public class SaxParser {
         {
             e.printStackTrace();
             return new HandlerReturnObject<Place>( false, "Error Parsing XML.", new Place() );
+        }
+    }
+
+
+    public HandlerReturnObject<JSONArray> parseGraphDateResponse( String jsonResponse )
+    {
+        try
+        {
+            JSONArray json = new JSONArray( jsonResponse );
+            JSONObject object  = json.getJSONObject(0);
+            JSONArray datapoints = object.getJSONArray("datapoints");
+
+
+//            if ( json.has( "datapoints" ) )
+//            {
+//                json.get("datapoints");
+////                int uploadPk = json.getInt( pkLabel );
+//                return new HandlerReturnObject<Integer>( true, "Successful upload", 1 );
+//            }
+            return new HandlerReturnObject<JSONArray>(true, "Success", datapoints);
+        }
+        catch ( JSONException e )
+        {
+            return new HandlerReturnObject<JSONArray>(false, "ERROR loading graph data: " + e.toString(), new JSONArray());
         }
     }
 }

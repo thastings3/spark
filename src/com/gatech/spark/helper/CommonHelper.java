@@ -283,4 +283,14 @@ public class CommonHelper {
         return false;
     }
 
+    /**
+     * returns # of meters in given miles.
+     * @param miles
+     * @return
+     */
+    public static int convertMilesToMeters(int miles)
+    {
+        return (int)(miles * 1609.344);
+    }
+
 }
