@@ -22,6 +22,9 @@ import com.gatech.spark.helper.HandlerReturnObject;
 import com.gatech.spark.helper.HttpRestClient;
 import com.gatech.spark.helper.SaxParser;
 import com.gatech.spark.model.Place;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -113,6 +116,10 @@ public class SearchResultsOverlay extends MapOverlay {
 		for (SearchResultOverlayItem item : searchResults) {
 			item.addMarker(getMap());
 			item.show();
+            //TODO is this good to move the camera?
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(item.getLatLng(), 10);
+            getMap().animateCamera(cameraUpdate);
+            //getMap().set//  ( item.getLatLng() ) ;
 		}
 	}
 

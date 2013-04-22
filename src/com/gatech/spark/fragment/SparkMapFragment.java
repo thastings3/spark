@@ -137,6 +137,7 @@ public class SparkMapFragment extends Fragment {
 			}
 		});
 
+
 		// Let the overlays handle info windows
 		OverlayInfoWindowAdapter infoWindowHandler = new OverlayInfoWindowAdapter(this);
 		map.setInfoWindowAdapter(infoWindowHandler);
