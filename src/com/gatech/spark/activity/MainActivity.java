@@ -30,7 +30,7 @@ public class MainActivity extends Activity
 	private static final int MAP_FRAGMENT_INDEX = 0;
 	private static final String SUBSCRIPTIONS_FRAGMENT_TAG = "subscriptions";
 	private static final int SUBSCRIPTIONS_FRAGMENT_INDEX = 1;
-	protected static final String ACTION_FIND_PARKING = "action_find_parking";
+	protected static final String ACTION_FIND_PARKING = "com.gatech.spark.action.FIND_PARKING";
 	protected static final String ACTION_FIND_PARKING_PLACE = "action_find_parking_place";
     private SqliteHelper dbHelper;
     private ActionBar actionBar;
@@ -98,7 +98,8 @@ public class MainActivity extends Activity
     private void findParkingAround(Place place) {
     	Toast.makeText(this, "Finding parking around " + place.getName(), Toast.LENGTH_SHORT).show();
     	loadSparkMap();
-    	getSparkMap().searchForParkingLocations(place);
+//    	SparkMapFragment fragment = getSparkMap();
+//    	fragment.searchForParkingLocations(place);
     }
 
     private void loadSparkMap() {

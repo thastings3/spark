@@ -255,8 +255,12 @@ public class PlaceExpandedActivity extends Activity {
         new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              new AlertDialog.Builder( getApplicationContext() ).setTitle( "Find Parking?" ).setMessage( "Would you like to navigate to this location?" )
-                      .setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
+              new AlertDialog.Builder( view.getContext() )
+              .setTitle( "Find Parking?" )
+              .setMessage( "Would you like to navigate to this location?" )        
+              .setPositiveButton( android.R.string.ok,
+                  new DialogInterface.OnClickListener()
+                  {
                           @Override
                           public void onClick( DialogInterface dialog, int which )
                           {
@@ -274,23 +278,28 @@ public class PlaceExpandedActivity extends Activity {
 //                              //Intent intent = new Intent(getActivity(),LotExpandedActivity.class );
 //                              //startActivity(intent);
                           }
-                      } ).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                  } )
+               .setNegativeButton(android.R.string.cancel, 
+                   new DialogInterface.OnClickListener()
+                   {
                           @Override
                           public void onClick(DialogInterface dialog, int which) {
 
                           }
-              }).create().show();
+                   })
+                .create()
+                .show();
             	
-                HandlerReturnObject<Subscription> handlerObject = dbHelper.insertSubscription(new Subscription(place.getName(), place.getLocation().getLatitude(), place.getLocation().getLongitude(), ""));
-                if(handlerObject.isValid())
-                {
-                    CommonHelper.showLongToast(PlaceExpandedActivity.this, "You are now subscribed!");
-                    PlaceExpandedActivity.this.finish();
-                }
-                else
-                {
-                    CommonHelper.showLongToast(PlaceExpandedActivity.this, "Error subscribing: "  + handlerObject.getMessage());
-                }
+//                HandlerReturnObject<Subscription> handlerObject = dbHelper.insertSubscription(new Subscription(place.getName(), place.getLocation().getLatitude(), place.getLocation().getLongitude(), ""));
+//                if(handlerObject.isValid())
+//                {
+//                    CommonHelper.showLongToast(PlaceExpandedActivity.this, "You are now subscribed!");
+//                    PlaceExpandedActivity.this.finish();
+//                }
+//                else
+//                {
+//                    CommonHelper.showLongToast(PlaceExpandedActivity.this, "Error subscribing: "  + handlerObject.getMessage());
+//                }
             }
         });
 
