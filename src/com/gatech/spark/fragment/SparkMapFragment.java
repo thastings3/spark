@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.gatech.spark.R;
+import com.gatech.spark.activity.MainActivity;
 import com.gatech.spark.helper.CommonHelper;
 import com.gatech.spark.helper.HandlerReturnObject;
 import com.gatech.spark.helper.HttpRestClient;
@@ -70,6 +71,12 @@ public class SparkMapFragment extends Fragment {
 		setupClickListeners();
 		setupMap();
 		initOverlays();
+
+		MainActivity activity = (MainActivity) getActivity();
+		if (activity.getShowParkingResultsOnLoad()) {
+			searchForParkingLocations(activity.getShowParkingResultsOnLoadPlace());
+			activity.setShowParkingReultsOnLoad(false);
+		}
 
 		return rootView;
 	}

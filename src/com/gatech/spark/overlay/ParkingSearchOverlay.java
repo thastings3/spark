@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.gatech.spark.activity.LotExpandedActivity;
+import com.gatech.spark.activity.MainActivity;
 import com.gatech.spark.activity.PlaceExpandedActivity;
 import com.gatech.spark.fragment.SparkMapFragment;
 import com.gatech.spark.helper.CommonHelper;
@@ -37,6 +38,8 @@ public class ParkingSearchOverlay extends MapOverlay {
 		super(fragment);
 		parkingLots = new ArrayList<ParkingLotOverlayItem>();
 		subscription = null;
+		
+
 	}
 
 	public void setSubscription(Subscription sub) {

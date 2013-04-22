@@ -34,6 +34,20 @@ public class MainActivity extends Activity
 	protected static final String ACTION_FIND_PARKING_PLACE = "action_find_parking_place";
     private SqliteHelper dbHelper;
     private ActionBar actionBar;
+	private boolean showParkingResultsOnLoad;
+	private Place showParkingResultsOnLoadPlace;
+	
+	public boolean getShowParkingResultsOnLoad () {
+		return showParkingResultsOnLoad;
+	}
+	
+	public void setShowParkingReultsOnLoad(boolean show) {
+		this.showParkingResultsOnLoad = show;
+	}
+	
+	public Place getShowParkingResultsOnLoadPlace() {
+		return showParkingResultsOnLoadPlace;
+	}
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -98,8 +112,13 @@ public class MainActivity extends Activity
     private void findParkingAround(Place place) {
     	Toast.makeText(this, "Finding parking around " + place.getName(), Toast.LENGTH_SHORT).show();
     	loadSparkMap();
-//    	SparkMapFragment fragment = getSparkMap();
-//    	fragment.searchForParkingLocations(place);
+    	SparkMapFragment fragment = getSparkMap();
+    	if (fragment != null) {
+    		fragment.searchForParkingLocations(place);
+    	} else {
+    		showParkingResultsOnLoad = true;
+    		showParkingResultsOnLoadPlace = place;
+    	}
     }
 
     private void loadSparkMap() {
