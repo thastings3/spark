@@ -12,11 +12,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.gatech.spark.R;
-import com.gatech.spark.activity.LotExpandedActivity;
-import com.gatech.spark.activity.MainActivity;
+import com.gatech.spark.activity.PlaceExpandedActivity;
 import com.gatech.spark.adapter.SubscriptionsListViewAdapter;
 import com.gatech.spark.database.SqliteHelper;
 import com.gatech.spark.helper.CommonHelper;
@@ -46,21 +44,10 @@ public class SubscriptionsFragment extends Fragment {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(final AdapterView<?> adapterView, View view,final int i, long l) {
-                new AlertDialog.Builder( SubscriptionsFragment.this.getActivity() ).setTitle( "Find Parking?" ).setMessage( "Would you like to navigate to this location?" )
-                        .setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick( DialogInterface dialog, int which )
-                            {
-                                ((MainActivity)SubscriptionsFragment.this.getActivity()).searchForParkingLocations((Subscription)adapterView.getItemAtPosition(i), true);
-                                //Intent intent = new Intent(getActivity(),LotExpandedActivity.class );
-                                //startActivity(intent);
-                            }
-                        } ).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                }).create().show();
+				Intent intent = new Intent( getActivity(), PlaceExpandedActivity.class );
+				String placeReference = ((Subscription)adapterView.getItemAtPosition(i)).getPlaceReference();
+				intent.putExtra( PlaceExpandedActivity.PLACE,  placeReference );
+				getActivity().startActivity( intent );
             }
         });
 
