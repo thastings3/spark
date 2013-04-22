@@ -116,10 +116,18 @@ public class SearchResultsOverlay extends MapOverlay {
 		for (SearchResultOverlayItem item : searchResults) {
 			item.addMarker(getMap());
 			item.show();
-            //TODO is this good to move the camera?
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(item.getLatLng(), 10);
-            getMap().animateCamera(cameraUpdate);
-            //getMap().set//  ( item.getLatLng() ) ;
+		}
+		SearchResultOverlayItem first = searchResults.iterator().next();
+		zoomOutTillVisible(first);
+	}
+
+	private void zoomOutTillVisible(SearchResultOverlayItem item) {
+		if (item == null)
+			return;
+		LatLng target = item.getLatLng();
+		while (!getBounds().contains(target)) {
+			Log.d(TAG, "zooming");
+			getMap().moveCamera(CameraUpdateFactory.zoomOut());
 		}
 	}
 
