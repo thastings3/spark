@@ -38,4 +38,9 @@ public class SubscriptionsOverlayItem extends OverlayItem {
 	protected int getID() {
 		return myID;
 	}
+
+    public Subscription getSubscription()
+    {
+        return this.subscription;
+    }
 }

@@ -8,4 +8,6 @@
     <color name="btn_gray">#666669</color>
     <color name="btn_green">#70AA28</color>
     <color name="btn_red">#CC1122</color>
+    <color name="transparent">#00000000</color>
+    <color name="orange">#F9B209</color>
 </resources>

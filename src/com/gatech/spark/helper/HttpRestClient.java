@@ -150,7 +150,7 @@ public class HttpRestClient {
 
     public static void getParkingLotGraph(int pkParkingLot, AsyncHttpResponseHandler responseHandler)
     {
-        String baseURL = "http://centspark6675.cloudapp.net/render?target=stats.gauges.parkinglot." + pkParkingLot + "&format=json&from=-36hours";
+        String baseURL = "http://centspark6675.cloudapp.net/render?target=stats.gauges.parkinglot." + pkParkingLot + "&format=json&from=-4hours";
         client.get( baseURL , null , responseHandler );
     }
 

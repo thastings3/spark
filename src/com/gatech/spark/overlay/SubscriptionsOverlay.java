@@ -3,6 +3,9 @@ package com.gatech.spark.overlay;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +15,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.gatech.spark.R;
+import com.gatech.spark.activity.MainActivity;
+import com.gatech.spark.activity.PlaceExpandedActivity;
 import com.gatech.spark.database.SqliteHelper;
 import com.gatech.spark.fragment.SparkMapFragment;
 import com.gatech.spark.helper.HandlerReturnObject;
@@ -152,10 +157,35 @@ public class SubscriptionsOverlay extends MapOverlay {
 		SubscriptionsOverlayItem item = (SubscriptionsOverlayItem) getOverlayItem(marker);
 		View popup = inflater.inflate(R.layout.info_window_subscription, null);
 		TextView tv = (TextView)popup.findViewById(R.id.title);
-		tv.setText("A Subscription at " + item.getLatLng());
+		tv.setText(item.getSubscription().getName());
 		tv = (TextView)popup.findViewById(R.id.snippet);
 		tv.setText(item.createSnippet());
 
 		return(popup);
 	}
+
+    @Override
+    public boolean onInfoWindowClick(Marker marker) {
+        if (!isMember(marker))
+            return false;
+        final SubscriptionsOverlayItem item = (SubscriptionsOverlayItem) getOverlayItem(marker);
+        new AlertDialog.Builder( getActivity() ).setTitle( "Find Parking?" ).setMessage( "Would you like to navigate to this location?" )
+                .setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick( DialogInterface dialog, int which )
+                    {
+                        ((MainActivity)getActivity()).searchForParkingLocations(item.getSubscription(), false);
+                    }
+                } ).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+        }).create().show();
+        //Intent intent = new Intent(getActivity(), PlaceExpandedActivity.class);
+        //intent.putExtra(PlaceExpandedActivity.PLACE, item.getPlace().getReference());
+        //getActivity().startActivity(intent);
+
+        return true;
+    }
 }

@@ -49,4 +49,23 @@
         <item name="android:background" >@drawable/button_new_green</item >
     </style >
 
+    <style name="list_item_style" >
+        <item name="android:textColor" >@color/blue</item >
+        <item name="android:background" >@drawable/list_item_panel</item >
+        <item name="android:cacheColorHint" >@color/transparent</item >
+        <item name="android:paddingLeft" >10sp</item >
+        <item name="android:paddingRight" >10sp</item >
+    </style >
+
+    <style name="list_style_seperated" >
+        <item name="android:cacheColorHint" >@color/transparent</item >
+        <item name="android:divider" >@color/transparent</item >
+        <item name="android:dividerHeight" >10.0sp</item >
+        <item name="android:fastScrollEnabled" >true</item >
+        <item name="android:drawSelectorOnTop" >false</item >
+        <item name="android:background" >@color/transparent</item >
+        <item name="android:listSelector" >@color/transparent</item >
+        <item name="android:layout_marginTop">5dp</item>
+    </style >
+
 </resources>

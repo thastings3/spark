@@ -31,7 +31,7 @@ public class SubscriptionsListViewAdapter extends ArrayAdapter<Subscription>
 
     public SubscriptionsListViewAdapter( Context context, ArrayList<Subscription> subscriptions)
     {
-        super( context, R.layout.list_item, subscriptions );
+        super( context, R.layout.subscriptions_list_row_layout, subscriptions );
         this.context = context;
         mData = subscriptions;
     }
@@ -47,7 +47,7 @@ public class SubscriptionsListViewAdapter extends ArrayAdapter<Subscription>
         ViewHolder viewHolder;
         if ( convertView == null )
         {
-            convertView = View.inflate( context, R.layout.list_item, null );
+            convertView = View.inflate( context, R.layout.subscriptions_list_row_layout, null );
             viewHolder = new ViewHolder();
             viewHolder.text = (TextView) convertView.findViewById( R.id.text1 );
             convertView.setTag( viewHolder );

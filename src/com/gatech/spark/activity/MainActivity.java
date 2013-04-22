@@ -17,6 +17,9 @@ import com.gatech.spark.R;
 import com.gatech.spark.database.SqliteHelper;
 import com.gatech.spark.fragment.SparkMapFragment;
 import com.gatech.spark.fragment.SubscriptionsFragment;
+import com.gatech.spark.helper.SaxParser;
+import com.gatech.spark.model.Subscription;
+import com.gatech.spark.overlay.SubscriptionsOverlayItem;
 
 public class MainActivity extends Activity
 {
@@ -153,4 +156,19 @@ public class MainActivity extends Activity
 		                            FragmentTransaction fragmentTransaction) {
 		}
 	}
+
+    /**
+     *
+     * @param subscription
+     * @param changeTab
+     */
+    public void searchForParkingLocations(Subscription subscription, boolean changeTab)
+    {
+        if(changeTab)
+        {
+            actionBar.setSelectedNavigationItem(MAP_FRAGMENT_INDEX);
+        }
+        SparkMapFragment sparkMap = (SparkMapFragment) getFragmentManager().findFragmentByTag(MAP_FRAGMENT_TAG);
+        sparkMap.searchForParkingLocations(subscription);
+    }
 }

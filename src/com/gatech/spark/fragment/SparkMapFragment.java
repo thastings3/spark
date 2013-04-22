@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +17,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.gatech.spark.R;
+import com.gatech.spark.helper.CommonHelper;
+import com.gatech.spark.helper.HandlerReturnObject;
+import com.gatech.spark.helper.HttpRestClient;
+import com.gatech.spark.helper.SaxParser;
+import com.gatech.spark.model.Place;
+import com.gatech.spark.model.SparkParkingLot;
+import com.gatech.spark.model.Subscription;
 import com.gatech.spark.overlay.MapOverlay;
 import com.gatech.spark.overlay.OverlayInfoWindowAdapter;
 import com.gatech.spark.overlay.SearchResultsOverlay;
@@ -29,6 +37,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 
 public class SparkMapFragment extends Fragment {
 
@@ -273,4 +282,47 @@ public class SparkMapFragment extends Fragment {
 		super.onLowMemory();
 		getMapView().onLowMemory();
 	}
+
+    public void searchForParkingLocations(Subscription subscription)
+    {
+        HttpRestClient.getNearbyParkingLots(subscription.getLatitude(), subscription.getLongitude(), CommonHelper.convertMilesToMeters(2),
+                new AsyncHttpResponseHandler() {
+                    ProgressDialog pDialog;
+
+                    @Override
+                    public void onStart() {
+                        pDialog = new ProgressDialog(getActivity());
+                        pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                        pDialog.setCancelable(false);
+                        pDialog.setTitle("Searching for parking...");
+                        pDialog.show();
+                    }
+
+                    @Override
+                    public void onSuccess(String s) {
+                        SaxParser parser = new SaxParser();
+                        HandlerReturnObject<ArrayList<SparkParkingLot>> handlerObject = parser.parseParkingLotsXmlResponse(s);
+                        if (handlerObject.isValid())
+                        {
+
+                            //TODO handlerObject.getObject(); is an array list of SparkParkingLots. We need to add these to the overlay map and allow the user to pick on
+                            //to navigate to.
+                        }
+                        else
+                        {
+                            CommonHelper.showLongToast(getActivity(), "Failed to find parking locations. Please Try again later.");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable throwable, String s) {
+                        super.onFailure(throwable, s);
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        pDialog.dismiss();
+                    }
+                });
+    }
 }
