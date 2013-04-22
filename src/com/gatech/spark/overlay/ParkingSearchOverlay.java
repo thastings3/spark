@@ -4,10 +4,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 
+import com.gatech.spark.activity.LotExpandedActivity;
+import com.gatech.spark.activity.PlaceExpandedActivity;
 import com.gatech.spark.fragment.SparkMapFragment;
 import com.gatech.spark.helper.CommonHelper;
 import com.gatech.spark.helper.HandlerReturnObject;
@@ -25,7 +29,7 @@ public class ParkingSearchOverlay extends MapOverlay {
 
 	private static final String TAG = "spark.ParkingSearchOverlay";
 
-	private SubscriptionsOverlayItem subscription;
+	private ParkingLotSubscriptionOverlayItem subscription;
 	private Collection<ParkingLotOverlayItem> parkingLots;
 	private boolean isVisible = false;
 
@@ -36,7 +40,7 @@ public class ParkingSearchOverlay extends MapOverlay {
 	}
 
 	public void setSubscription(Subscription sub) {
-		this.subscription = new SubscriptionsOverlayItem(sub);
+		this.subscription = new ParkingLotSubscriptionOverlayItem(sub);
 	}
 
 	@Override
@@ -104,7 +108,7 @@ public class ParkingSearchOverlay extends MapOverlay {
 	}
 
 	private void centerMapOnLatLng(LatLng center) {
-		CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(center, 10);
+		CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(center);
 		getMap().animateCamera(cameraUpdate);
 	}
 
@@ -137,6 +141,43 @@ public class ParkingSearchOverlay extends MapOverlay {
 	@Override
 	public void onCreateOptionsMenu(Menu menu) {
 		return;
+	}
+
+	@Override
+	public OverlayItem getOverlayItem(Marker marker) {
+		if (isMember(marker)) {
+			for (OverlayItem item : parkingLots) {
+				if (item.hasMarker(marker))
+					return item;
+			}
+		}
+		return null;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// just hide this view if any other overlay wants to show
+		setVisibility(false);
+		return false;
+	}
+
+	@Override
+	public boolean onInfoWindowClick(Marker marker) {
+		if (!isMember(marker))
+			return false;
+		ParkingLotOverlayItem item = (ParkingLotOverlayItem) getOverlayItem(marker);
+		if (item == null) {
+			Log.d(TAG, "item is null");
+			return false;
+		}
+		if (item.getParkingLot() == null) {
+			Log.d(TAG, "lot is null");
+			return false;
+		}
+        Intent intent = new Intent(getActivity(), LotExpandedActivity.class );
+        intent.putExtra(LotExpandedActivity.SUBSCRIPTION, item.getParkingLot().getParkingLotID());
+        getActivity().startActivity(intent);
+        return true;
 	}
 
 	/**

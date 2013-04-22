@@ -220,11 +220,11 @@ public class SparkMapFragment extends Fragment {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		boolean handled = false;
 		for (MapOverlay overlay : allOverlays) {
-			if (overlay.onOptionsItemSelected(item))
-				return true;
+			handled = overlay.onOptionsItemSelected(item) || handled;
 		}
-		return super.onOptionsItemSelected(item);
+		return handled || super.onOptionsItemSelected(item);
 	}
 
 	/**

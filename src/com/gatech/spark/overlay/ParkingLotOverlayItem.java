@@ -20,6 +20,10 @@ public class ParkingLotOverlayItem extends OverlayItem {
 		parkingLot = lot;
 	    myID = ID++;
 	}
+	
+	public SparkParkingLot getParkingLot() {
+		return parkingLot;
+	}
 
 	@Override
 	protected MarkerOptions getMarkerOptions() {
