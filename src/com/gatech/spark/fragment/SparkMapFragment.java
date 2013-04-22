@@ -26,6 +26,8 @@ import com.gatech.spark.model.SparkParkingLot;
 import com.gatech.spark.model.Subscription;
 import com.gatech.spark.overlay.MapOverlay;
 import com.gatech.spark.overlay.OverlayInfoWindowAdapter;
+import com.gatech.spark.overlay.ParkingLotOverlayItem;
+import com.gatech.spark.overlay.ParkingSearchOverlay;
 import com.gatech.spark.overlay.SearchResultsOverlay;
 import com.gatech.spark.overlay.SubscriptionsOverlay;
 import com.gatech.spark.overlay.WhatsHotOverlay;
@@ -51,6 +53,7 @@ public class SparkMapFragment extends Fragment {
 	private MapOverlay whatsHotOverlay;
 	private MapOverlay searchResultsOverlay;
 	private MapOverlay subscriptionsOverlay;
+	private MapOverlay parkingSearchOverlay;
 	private ArrayList<MapOverlay> allOverlays;
 
 	@Override
@@ -115,6 +118,8 @@ public class SparkMapFragment extends Fragment {
 		allOverlays.add(searchResultsOverlay);
 		subscriptionsOverlay = new SubscriptionsOverlay(this);
 		allOverlays.add(subscriptionsOverlay);
+		parkingSearchOverlay = new ParkingSearchOverlay(this);
+		allOverlays.add(parkingSearchOverlay);
 	}
 
 	public Collection<MapOverlay> getOverlays() {
@@ -228,7 +233,7 @@ public class SparkMapFragment extends Fragment {
 	 * 
 	 * @param query
 	 */
-	public void doSearch(String query) {
+	public void searchForPlaces(String query) {
 		Log.d(TAG, "searching for " + query);
 		((SearchResultsOverlay) searchResultsOverlay).setSearchParams(query);
 		// When we search, we are actually in a saved, non-active state. The act
@@ -237,6 +242,18 @@ public class SparkMapFragment extends Fragment {
 		// queries now, so they are available when we resume.
 		storePreferences();
 	}
+
+    public void searchForParkingLocations(Subscription subscription)
+    {
+		Log.d(TAG, "searching for lots around " + subscription.getName());
+		for (MapOverlay overlay : allOverlays) {
+	        overlay.setVisibility(false);
+        }
+
+		((ParkingSearchOverlay) parkingSearchOverlay).setSubscription(subscription);
+		parkingSearchOverlay.populate();
+		parkingSearchOverlay.setVisibility(true);
+    }
 
 	// Must forward lifecycle methods to MapView object. See
 	// https://developers.google.com/maps/documentation/android/reference/com/google/android/gms/maps/MapView
@@ -284,46 +301,4 @@ public class SparkMapFragment extends Fragment {
 		getMapView().onLowMemory();
 	}
 
-    public void searchForParkingLocations(Subscription subscription)
-    {
-        HttpRestClient.getNearbyParkingLots(subscription.getLatitude(), subscription.getLongitude(), CommonHelper.convertMilesToMeters(2),
-                new AsyncHttpResponseHandler() {
-                    ProgressDialog pDialog;
-
-                    @Override
-                    public void onStart() {
-                        pDialog = new ProgressDialog(getActivity());
-                        pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                        pDialog.setCancelable(false);
-                        pDialog.setTitle("Searching for parking...");
-                        pDialog.show();
-                    }
-
-                    @Override
-                    public void onSuccess(String s) {
-                        SaxParser parser = new SaxParser();
-                        HandlerReturnObject<ArrayList<SparkParkingLot>> handlerObject = parser.parseParkingLotsXmlResponse(s);
-                        if (handlerObject.isValid())
-                        {
-
-                            //TODO handlerObject.getObject(); is an array list of SparkParkingLots. We need to add these to the overlay map and allow the user to pick on
-                            //to navigate to.
-                        }
-                        else
-                        {
-                            CommonHelper.showLongToast(getActivity(), "Failed to find parking locations. Please Try again later.");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Throwable throwable, String s) {
-                        super.onFailure(throwable, s);
-                    }
-
-                    @Override
-                    public void onFinish() {
-                        pDialog.dismiss();
-                    }
-                });
-    }
 }

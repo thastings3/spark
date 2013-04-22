@@ -87,7 +87,7 @@ public class MainActivity extends Activity
     	Toast.makeText(this, "Searching for " + query, Toast.LENGTH_SHORT).show();
     	loadSparkMap();
     	SparkMapFragment sparkMap = (SparkMapFragment) getFragmentManager().findFragmentByTag(MAP_FRAGMENT_TAG);
-    	sparkMap.doSearch(query);
+    	sparkMap.searchForPlaces(query);
     }
 
     private void loadSparkMap() {
