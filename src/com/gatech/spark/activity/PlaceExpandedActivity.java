@@ -1,7 +1,9 @@
 package com.gatech.spark.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import com.gatech.spark.R;
 import com.gatech.spark.database.SqliteHelper;
+import com.gatech.spark.fragment.SubscriptionsFragment;
 import com.gatech.spark.helper.CommonHelper;
 import com.gatech.spark.helper.HandlerReturnObject;
 import com.gatech.spark.helper.HttpRestClient;
@@ -141,9 +144,14 @@ public class PlaceExpandedActivity extends Activity {
 
 	private void subscribe() {
 		Subscription sub = new Subscription(place);
-		dbHelper.insertSubscription(sub);
-		isSubscription = true;
-		updateSubscribeBtn();
+		HandlerReturnObject<Subscription> handlerObject = dbHelper.insertSubscription(sub);
+		if(handlerObject.isValid()) {
+            CommonHelper.showLongToast(PlaceExpandedActivity.this, "You are now subscribed!");
+    		isSubscription = true;
+    		updateSubscribeBtn();
+        } else {
+            CommonHelper.showLongToast(PlaceExpandedActivity.this, "Error subscribing: "  + handlerObject.getMessage());
+        }
 	}
 
 	private void unsubscribe() {
@@ -243,9 +251,36 @@ public class PlaceExpandedActivity extends Activity {
 
     private void setupFindParkingButton()
     {
-        findParkingButton.setOnClickListener(new View.OnClickListener() {
+        findParkingButton.setOnClickListener(
+        new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+              new AlertDialog.Builder( getApplicationContext() ).setTitle( "Find Parking?" ).setMessage( "Would you like to navigate to this location?" )
+                      .setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
+                          @Override
+                          public void onClick( DialogInterface dialog, int which )
+                          {
+                        	  Intent intent = new Intent(getApplicationContext(), MainActivity.class );
+                        	  intent.setAction(MainActivity.ACTION_FIND_PARKING);
+                        	  intent.putExtra(MainActivity.ACTION_FIND_PARKING_PLACE, place);
+                              startActivity(intent);
+                        	  
+//                              Intent intent = new Intent( activity, PlaceExpandedActivity.class );
+//              				Place place = (Place)adapterView.getItemAtPosition(i);
+//              				intent.putExtra( PlaceExpandedActivity.PLACE,  place.getReference() );
+//              				activity.startActivity( intent );
+//                              
+//                              ((MainActivity)SubscriptionsFragment.this.getActivity()).searchForParkingLocations(new Subscription(place), true);
+//                              //Intent intent = new Intent(getActivity(),LotExpandedActivity.class );
+//                              //startActivity(intent);
+                          }
+                      } ).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                          @Override
+                          public void onClick(DialogInterface dialog, int which) {
+
+                          }
+              }).create().show();
+            	
                 HandlerReturnObject<Subscription> handlerObject = dbHelper.insertSubscription(new Subscription(place.getName(), place.getLocation().getLatitude(), place.getLocation().getLongitude(), ""));
                 if(handlerObject.isValid())
                 {

@@ -242,6 +242,10 @@ public class SparkMapFragment extends Fragment {
 		// queries now, so they are available when we resume.
 		storePreferences();
 	}
+	
+	public void searchForParkingLocations(Place place) {
+		searchForParkingLocations(new Subscription(place));
+	}
 
     public void searchForParkingLocations(Subscription subscription)
     {

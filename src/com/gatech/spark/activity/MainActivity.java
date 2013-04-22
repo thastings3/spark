@@ -18,6 +18,7 @@ import com.gatech.spark.database.SqliteHelper;
 import com.gatech.spark.fragment.SparkMapFragment;
 import com.gatech.spark.fragment.SubscriptionsFragment;
 import com.gatech.spark.helper.SaxParser;
+import com.gatech.spark.model.Place;
 import com.gatech.spark.model.Subscription;
 import com.gatech.spark.overlay.SubscriptionsOverlayItem;
 
@@ -29,6 +30,8 @@ public class MainActivity extends Activity
 	private static final int MAP_FRAGMENT_INDEX = 0;
 	private static final String SUBSCRIPTIONS_FRAGMENT_TAG = "subscriptions";
 	private static final int SUBSCRIPTIONS_FRAGMENT_INDEX = 1;
+	protected static final String ACTION_FIND_PARKING = "action_find_parking";
+	protected static final String ACTION_FIND_PARKING_PLACE = "action_find_parking_place";
     private SqliteHelper dbHelper;
     private ActionBar actionBar;
 
@@ -80,18 +83,30 @@ public class MainActivity extends Activity
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
             doSearch(query);
+        } else if (ACTION_FIND_PARKING.equals(intent.getAction())) {
+        	Place place = intent.getParcelableExtra(ACTION_FIND_PARKING_PLACE);
+        	findParkingAround(place);
         }
     }
 
     private void doSearch(String query) {
     	Toast.makeText(this, "Searching for " + query, Toast.LENGTH_SHORT).show();
     	loadSparkMap();
-    	SparkMapFragment sparkMap = (SparkMapFragment) getFragmentManager().findFragmentByTag(MAP_FRAGMENT_TAG);
-    	sparkMap.searchForPlaces(query);
+    	getSparkMap().searchForPlaces(query);
+    }
+    
+    private void findParkingAround(Place place) {
+    	Toast.makeText(this, "Finding parking around " + place.getName(), Toast.LENGTH_SHORT).show();
+    	loadSparkMap();
+    	getSparkMap().searchForParkingLocations(place);
     }
 
     private void loadSparkMap() {
 	    actionBar.setSelectedNavigationItem(MAP_FRAGMENT_INDEX);
+    }
+    
+    private SparkMapFragment getSparkMap() {
+    	return (SparkMapFragment) getFragmentManager().findFragmentByTag(MAP_FRAGMENT_TAG);
     }
 
 	@Override
