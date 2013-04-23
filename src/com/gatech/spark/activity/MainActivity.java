@@ -113,9 +113,12 @@ public class MainActivity extends Activity
     	Toast.makeText(this, "Finding parking around " + place.getName(), Toast.LENGTH_SHORT).show();
     	loadSparkMap();
     	SparkMapFragment fragment = getSparkMap();
-    	if (fragment != null) {
+    	if (fragment != null)
+        {
     		fragment.searchForParkingLocations(place);
-    	} else {
+    	}
+        else
+        {
     		showParkingResultsOnLoad = true;
     		showParkingResultsOnLoadPlace = place;
     	}

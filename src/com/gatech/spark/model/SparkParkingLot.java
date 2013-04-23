@@ -1,5 +1,8 @@
 package com.gatech.spark.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created with IntelliJ IDEA.
  * User: tyler
@@ -7,7 +10,7 @@ package com.gatech.spark.model;
  * Time: 2:32 PM
  * To change this template use File | Settings | File Templates.
  */
-public class SparkParkingLot
+public class SparkParkingLot implements Parcelable
 {
     private int capacity;
     private boolean covered;
@@ -24,6 +27,17 @@ public class SparkParkingLot
         this.price = 0.0;
         this.priceTypeID = -1;
         this.location = new SparkLocation();
+    }
+
+    public SparkParkingLot(Parcel in) {
+        this.capacity = in.readInt();
+        this.covered  = in.readByte() == 1;
+        this.parkingLotID = in.readInt();
+        this.price = in.readDouble();
+        this.priceTypeID = in.readInt();
+        this.location = in.readParcelable(SparkLocation.class.getClassLoader());
+
+        //dest.writeByte( (byte) ( isFirstDateAttained ? 1 : 0 ) );
     }
 
     public int getCapacity() {
@@ -73,4 +87,31 @@ public class SparkParkingLot
     public void setLocation(SparkLocation location) {
         this.location = location;
     }
+
+    public int describeContents()
+    {
+        return 0;
+    }
+
+    public void writeToParcel( Parcel dest, int flags )
+    {
+        dest.writeInt(this.capacity);
+        dest.writeByte( (byte) ( covered ? 1 : 0 ) );
+        dest.writeInt(parkingLotID);
+        dest.writeDouble(price);
+        dest.writeInt(priceTypeID);
+        dest.writeParcelable(location, flags);
+    }
+
+    public static final Parcelable.Creator<SparkParkingLot> CREATOR = new Parcelable.Creator<SparkParkingLot>() {
+        public SparkParkingLot createFromParcel( Parcel in )
+        {
+            return new SparkParkingLot( in );
+        }
+
+        public SparkParkingLot[] newArray( int size )
+        {
+            return new SparkParkingLot[size];
+        }
+    };
 }

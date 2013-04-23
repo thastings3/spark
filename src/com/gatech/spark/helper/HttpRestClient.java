@@ -123,7 +123,7 @@ public class HttpRestClient {
         params.put( "longitude", longitude + "" );
         params.put( "latitude", latitude + "" );
         params.put( "maxdistance", radiusInMeters + "" );
-        params.put( "maxresults", "5" );
+        params.put( "maxresults", "10" );
         client.get( baseURL , params , responseHandler );
     }
 
@@ -150,7 +150,7 @@ public class HttpRestClient {
 
     public static void getParkingLotGraph(int pkParkingLot, AsyncHttpResponseHandler responseHandler)
     {
-        String baseURL = "http://centspark6675.cloudapp.net/render?target=stats.gauges.parkinglot." + pkParkingLot + "&format=json&from=-4hours";
+        String baseURL = "http://centspark6675.cloudapp.net/render?target=parkinglot." + pkParkingLot + "&format=json&from=-6h";
         client.get( baseURL , null , responseHandler );
     }
 

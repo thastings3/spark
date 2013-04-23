@@ -104,10 +104,11 @@
             android:layout_height="wrap_content"
             android:id="@+id/openTextView" android:layout_gravity="left|center_vertical"/>
     <Button
+            android:visibility="gone"
             android:id="@+id/findParkingButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Subscribe"
+            android:text="Find Parking"
             style="@style/btn_submit"
             />
 </LinearLayout>

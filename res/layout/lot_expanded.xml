@@ -9,30 +9,35 @@
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Lot 1"
             android:textSize="25dp"
-            android:id="@+id/textView" android:layout_gravity="right|center_vertical"/>
+            android:id="@+id/lotNumber" android:layout_gravity="right|center_vertical"/>
 
     <View
             android:layout_width="fill_parent"
             android:layout_height="2dp"
             android:background="@android:color/black"/>
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="47 Spots Available"
-            android:textSize="20dp"
-            android:id="@+id/textView1" android:layout_gravity="left|center_vertical"/>
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        >
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:textSize="20dp"
+                android:id="@+id/spotsAvailable" android:layout_gravity="left|center_vertical"/>
+        <ImageButton
+                android:id="@+id/navigationButton"
+                android:layout_alignParentRight="true"
+                android:onClick="startNavigation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/navigation"/>
+        </RelativeLayout>
     <LinearLayout
             android:id="@+id/chart"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal" />
-    <Button
-            android:id="@+id/navigationButton"
-            android:onClick="startNavigation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Navigation"
-            android:drawableLeft="@drawable/navigation"/>
+
 </LinearLayout>

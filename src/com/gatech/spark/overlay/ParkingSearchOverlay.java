@@ -178,7 +178,7 @@ public class ParkingSearchOverlay extends MapOverlay {
 			return false;
 		}
         Intent intent = new Intent(getActivity(), LotExpandedActivity.class );
-        intent.putExtra(LotExpandedActivity.SUBSCRIPTION, item.getParkingLot().getParkingLotID());
+        intent.putExtra(LotExpandedActivity.PARKING_LOT, item.getParkingLot());
         getActivity().startActivity(intent);
         return true;
 	}
@@ -205,7 +205,7 @@ public class ParkingSearchOverlay extends MapOverlay {
 		private void doSearch(LatLng latLng) {
 			HttpRestClient.getNearbyParkingLots(latLng.latitude,
 			                                    latLng.longitude,
-			                                    CommonHelper.convertMilesToMeters(2),
+			                                    CommonHelper.convertMilesToMeters(5),
 			                                    new LotResponseHandler(this));
 		}
 
