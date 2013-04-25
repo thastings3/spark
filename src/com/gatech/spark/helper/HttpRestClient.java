@@ -123,7 +123,7 @@ public class HttpRestClient {
         params.put( "longitude", longitude + "" );
         params.put( "latitude", latitude + "" );
         params.put( "maxdistance", radiusInMeters + "" );
-        params.put( "maxresults", "10" );
+        params.put( "maxresults", "5" );
         client.get( baseURL , params , responseHandler );
     }
 

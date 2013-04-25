@@ -205,7 +205,7 @@ public class ParkingSearchOverlay extends MapOverlay {
 		private void doSearch(LatLng latLng) {
 			HttpRestClient.getNearbyParkingLots(latLng.latitude,
 			                                    latLng.longitude,
-			                                    CommonHelper.convertMilesToMeters(5),
+			                                    CommonHelper.convertMilesToMeters(3),
 			                                    new LotResponseHandler(this));
 		}
 

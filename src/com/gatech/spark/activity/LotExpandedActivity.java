@@ -29,6 +29,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 /**
  * Created with IntelliJ IDEA.
@@ -145,24 +146,19 @@ public class LotExpandedActivity extends Activity {
         //top, left, bottom, right -- for margins.
         mRenderer.setMargins(new int[] { 20, 30, 15, 30 });
         mRenderer.setZoomButtonsVisible(true);
-        mRenderer.setPointSize(1);
+        mRenderer.setPointSize(4);
+        mRenderer.setShowGridY(true);
+        mRenderer.setShowGridX(true);
+        mRenderer.setGridColor(Color.WHITE);
+        mRenderer.setShowLegend(false);
     }
 
     private XYMultipleSeriesRenderer getDemoRenderer() {
         XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
-//        renderer.addXTextLabel();
-        renderer.setMargins(new int[]{20, 30, 15, 30});
+
         XYSeriesRenderer r = new XYSeriesRenderer();
-        r.setColor(Color.GREEN);
-        r.setPointStyle(PointStyle.CIRCLE);
-        r.setFillBelowLine(false);
-        //r.setFillBelowLineColor(Color.WHITE);
-        r.setFillPoints(true);
-        renderer.addSeriesRenderer(r);
-
-
-        r = new XYSeriesRenderer();
         r.setPointStyle(PointStyle.POINT);
+        r.setLineWidth(6);
         r.setColor(Color.RED);
         r.setFillPoints(true);
         renderer.addSeriesRenderer(r);
@@ -177,9 +173,53 @@ public class LotExpandedActivity extends Activity {
         return renderer;
     }
 
+    private void addHotRenderer(XYMultipleSeriesRenderer renderer)
+    {
+        //HOT
+        renderer.setMargins(new int[]{20, 30, 15, 30});
+        XYSeriesRenderer r = new XYSeriesRenderer();
+        r.setColor(getResources().getColor(R.color.graph_dark_yellow));
+        r.setPointStyle(PointStyle.CIRCLE);
+        r.setFillBelowLine(false);
+        r.setFillPoints(true);
+        renderer.addSeriesRenderer(r);
+    }
+
+    private void addMildRenderer(XYMultipleSeriesRenderer renderer)
+    {
+        //COLD
+        renderer.setMargins(new int[]{20, 30, 15, 30});
+        XYSeriesRenderer r = new XYSeriesRenderer();
+        r.setColor(getResources().getColor(R.color.graph_yellow));
+        r.setPointStyle(PointStyle.CIRCLE);
+        r.setFillBelowLine(false);
+        r.setFillPoints(true);
+        renderer.addSeriesRenderer(r);
+    }
+
+    private void addNeutralRenderer(XYMultipleSeriesRenderer renderer)
+    {
+        //Neutral
+        renderer.setMargins(new int[]{20, 30, 15, 30});
+        XYSeriesRenderer r = new XYSeriesRenderer();
+        r.setColor(getResources().getColor(R.color.graph_green));
+        r.setPointStyle(PointStyle.CIRCLE);
+        r.setFillBelowLine(false);
+        r.setFillPoints(true);
+        renderer.addSeriesRenderer(r);
+    }
+
     private XYMultipleSeriesDataset getDemoDataset(JSONArray array) {
         XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
-        XYSeries firstSeries = new XYSeries("Spots Taken");
+        ArrayList<XYSeries> serieses = new ArrayList<XYSeries>();
+
+        boolean wasHot = false, wasMild = false, wasNeutral = false;
+        XYSeries wasHotSeries = new XYSeries(""), wasMildSeries = new XYSeries(""), wasNeutralSeries = new XYSeries("");
+
+        //XYSeries neutralSeries = new XYSeries("Spots Taken");
+        //XYSeries mildSeries = new XYSeries("");
+        //XYSeries hotSeries = new XYSeries("");
+
 
         XYSeries secondSeries = new XYSeries("Max Capacity");
 
@@ -189,19 +229,121 @@ public class LotExpandedActivity extends Activity {
             double lastX = 0;
             for (int i = 0; i < array.length(); i++)
             {
+
                 subArray = (JSONArray)array.get(i);
                 if(!subArray.isNull(0) && !subArray.isNull(1))
                 {
-                    //TODO test manipulation of data to get a chart that shows something.
-                    firstSeries.add( subArray.getDouble(1) ,subArray.getDouble(0)); //i / 2); // FOR Y
                     occupiedSpotCount = (int)subArray.getDouble(0);
+                    if( occupiedSpotCount >=  (.9 * parkingLot.getCapacity())  )
+                    {
+                        if( wasHot )
+                        {
+                            wasHotSeries.add(subArray.getDouble(1), subArray.getDouble(0));
+                        }
+                        else
+                        {
+                            if(wasHotSeries.getItemCount() > 0)
+                            {
+                                serieses.add(wasHotSeries);
+                                addHotRenderer(mRenderer);
+                                wasHotSeries = new XYSeries("");
+                            }
+                            else
+                            {
+                                wasHotSeries.add(subArray.getDouble(1), subArray.getDouble(0));
+                            }
+                        }
+
+                        wasHot = true;
+                        wasMild = false;
+                        wasNeutral = false;
+                    }
+                    else if(  (occupiedSpotCount >= (.5 * parkingLot.getCapacity()))  &&   ( occupiedSpotCount < (.9 * parkingLot.getCapacity())) )
+                    {
+
+                        if( wasMild )
+                        {
+                            wasMildSeries.add(subArray.getDouble(1), subArray.getDouble(0));
+                        }
+                        else
+                        {
+                            if(wasMildSeries.getItemCount() > 0)
+                            {
+                                serieses.add(wasMildSeries);
+                                addMildRenderer(mRenderer);
+                                wasMildSeries = new XYSeries("");
+                            }
+                            else
+                            {
+                                wasMildSeries.add(subArray.getDouble(1), subArray.getDouble(0));
+                            }
+                        }
+                        //mildSeries.add( subArray.getDouble(1) ,subArray.getDouble(0));
+                        wasMild = true;
+                        wasHot = false;
+                        wasNeutral = false;
+                    }
+                    else {
+
+                        if( wasNeutral )
+                        {
+                            wasNeutralSeries.add(subArray.getDouble(1), subArray.getDouble(0));
+                        }
+                        else
+                        {
+                            if(wasNeutralSeries.getItemCount() > 0)
+                            {
+                                serieses.add(wasNeutralSeries);
+                                addNeutralRenderer(mRenderer);
+                                wasNeutralSeries = new XYSeries("");
+                            }
+                            else
+                            {
+                                wasNeutralSeries.add(subArray.getDouble(1), subArray.getDouble(0));
+                            }
+                        }
+                       // neutralSeries.add( subArray.getDouble(1) ,subArray.getDouble(0));
+                        wasNeutral = true;
+                        wasMild = false;
+                        wasHot = false;
+                    }
+                    //neutralSeries.add( subArray.getDouble(1) ,subArray.getDouble(0));
+
                     secondSeries.add(subArray.getDouble(1), parkingLot.getCapacity());
                     lastX =                               subArray.getDouble(1);
                 }
             }
-            Log.e("lastX" , lastX + "");
-            dataset.addSeries(firstSeries);
+
+            if(wasNeutralSeries.getItemCount() > 0)
+            {
+                serieses.add(wasNeutralSeries);
+                addNeutralRenderer(mRenderer);
+            }
+
+            if(wasMildSeries.getItemCount() > 0)
+            {
+                serieses.add(wasMildSeries);
+                addMildRenderer(mRenderer);
+                wasMildSeries = new XYSeries("");
+            }
+            if(wasHotSeries.getItemCount() > 0)
+            {
+                serieses.add(wasHotSeries);
+                addHotRenderer(mRenderer);
+                wasHotSeries = new XYSeries("");
+            }
+
+
             dataset.addSeries(secondSeries);
+            for(int i = 0; i < serieses.size(); i++)
+            {
+                dataset.addSeries(serieses.get(i));
+            }
+
+//            dataset.addSeries(neutralSeries);
+//            dataset.addSeries(hotSeries);
+//            dataset.addSeries(mildSeries);
+
             mRenderer.clearXTextLabels();
             mRenderer.setXLabels(0);
             addXaxisLabels(mRenderer, lastX );

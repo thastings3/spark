@@ -10,4 +10,8 @@
     <color name="btn_red">#CC1122</color>
     <color name="transparent">#00000000</color>
     <color name="orange">#F9B209</color>
+    <color name="graph_green">#D9F00E</color>
+    <color name="graph_yellow">#F08C0E</color>
+    <color name="graph_dark_yellow">#F00D0E</color>
+
 </resources>
